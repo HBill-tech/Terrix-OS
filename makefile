@@ -59,7 +59,7 @@ master: $(BUILD)/boot.bin \
 	$(BUILD)/kernel32.elf
 	dd if=$(BUILD)/boot.bin of=master.img bs=512 count=1 conv=notrunc
 	dd if=$(BUILD)/kernel.bin of=master.img bs=512 count=9 seek=1 conv=notrunc
-	dd if=$(BUILD)/kernel32.elf of=master.img bs=512 count=50 seek=10 conv=notrunc
+	dd if=$(BUILD)/kernel32.elf of=master.img bs=512 count=500 seek=10 conv=notrunc
 	${TOOL_PREFIX}readelf -a $(BUILD)/kernel32.elf > $(INFO)/kernel32.txt
 
 .PHONY: bochs

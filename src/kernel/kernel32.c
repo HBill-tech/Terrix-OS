@@ -99,7 +99,7 @@ void kernel32_init()
     // 0号扇区: 引导扇区 MBR
     // 1~9: Kernel x16
     // 10~*: Kernel x86
-    read_disk(10, 50, (uint16_t*)OS_ADDR);
+    read_disk(10, 500, (uint16_t*)OS_ADDR);
     uint32_t addr = read_elf_header((uint8_t*)OS_ADDR);
     if (addr == 0)
     {
