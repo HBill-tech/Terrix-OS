@@ -1,11 +1,11 @@
 #include <kernel.h>
-
-void test()
-{
-    char a = 'A';
-}
+#include <tty.h>
 
 void hlos_init(memory_info_t* mem_info, uint32_t gdt_info)
 {
-    test();
+    tty_init();
+    char *str = "Hello World!";
+    tty_write(str, 12);
+
+    while (TRUE);
 }

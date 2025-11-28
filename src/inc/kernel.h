@@ -30,7 +30,7 @@ typedef struct
 } _packed Elf32_Ehdr;
 
 
-// 程序头结构体
+// 程序头表中每项的结构
 typedef struct
 {
     Elf32_Word p_type;      // 段类型 (如 PT_LOAD表示可加载段 )

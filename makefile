@@ -4,7 +4,7 @@ SRC = ./src
 TEST = ./test
 INFO = ./info
 INC = $(SRC)/inc
-CFLAGS = -gdwarf-2 -O0 -c -m32 -I$(INC) -fno-pie -fno-stack-protector -nostdlib -nostdinc
+CFLAGS = -gdwarf-2 -O0 -c -m32 -I$(INC) -fno-pie -fno-stack-protector -nostdlib -nostdinc -Wno-int-to-pointer-cast -Wno-implicit-function-declaration
 
 
 # $(shell)和 $@ 等一同在 make 的解析阶段执行，如果 $(shell) 命令中含有 $@ 等符号，那么将会执行失败。
@@ -49,7 +49,9 @@ $(BUILD)/kernel.bin: $(BUILD)/kernel/start.o \
 	x86_64-elf-objcopy -O binary $(BUILD)/kernel.elf $(BUILD)/kernel.bin
 
 $(BUILD)/kernel32.elf: $(BUILD)/kernel32/start.o \
-	$(BUILD)/kernel32/kernel.o
+	$(BUILD)/kernel32/kernel.o 	\
+	$(BUILD)/kernel32/tty.o 	\
+	$(BUILD)/lib/string.o
 	$(shell mkdir -p $(dir $@))
 	x86_64-elf-ld -m elf_i386 -T $(SRC)/kernel32.lds $^ -o $@
 

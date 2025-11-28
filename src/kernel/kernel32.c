@@ -1,7 +1,7 @@
 #include <kernel.h>
 
 #define SECTOR_SIZE 512
-#define OS_ADDR     0x200000    // 操作系统内核放入内存的起始地址
+#define OS_ADDR     0x100000    // 操作系统内核放入内存的起始地址
 
 /**
  * 将硬盘的内容读取到内存中
@@ -17,7 +17,7 @@ void read_disk(uint32_t sector, uint32_t count, uint16_t* buffer) {
     outb(0x1F6, 0xE0);      
 
     outb(0x1F2, (uint8_t)(count >> 8));     // 扇区数高字节
-    outb(0x1F3, (uint8_t)(count >> 24));   // LBA 24-31位
+    outb(0x1F3, (uint8_t)(sector >> 24));   // LBA 24-31位
     outb(0x1F4, 0);                         // LBA 32-39位
     outb(0x1F5, 0);                         // LBA 40-47位
 
@@ -43,7 +43,7 @@ void read_disk(uint32_t sector, uint32_t count, uint16_t* buffer) {
 
 /**
  * 这个函数是ELF加载器的核心部分，负责解析ELF文件格式并将程序加载到内存中
- * @param   buffer 包含ELF文件内容的内存缓冲区
+ * @param   buffer 临时存储ELF文件内容的内存缓冲区首地址
  * @return  内核的入口地址，如果失败返回 0
  */
 uint32_t read_elf_header(uint8_t *buffer) {
@@ -61,9 +61,10 @@ uint32_t read_elf_header(uint8_t *buffer) {
     // e_phnum: 程序头表中段的数量
     for (int i = 0; i < elf_header->e_phnum; i++) {
         // e_phoff: 程序头表在 ELF 文件中的偏移量
+        // phdr:    当前遍历到的段应该被加载到的位置
         Elf32_Phdr *phdr = (Elf32_Phdr *)(buffer + elf_header->e_phoff) + i;
 
-        // 筛选可加载段
+        // 筛选可加载段，这些是需要加载到内存中的段
         if (phdr->p_type != PT_LOAD) {
             continue;
         }
@@ -75,6 +76,12 @@ uint32_t read_elf_header(uint8_t *buffer) {
         {
             *dst++ = *src++;
         }
+        
+        // ELF 文件中 BSS 段是不占空间的，但是在内存中需要占用空间，初值为 0.
+        // 链接过程会为 ELF 文件的每个段生成段首的物理地址 phdr->p_paddr, 
+        // 这个物理地址是将上一个段的 BSS 占用的内存空间预估在内的,
+        // 因此直接在该段的文件数据之后为 BSS 段赋 0 值就可以，不会和下一个段的数据发生地址冲突
+
         // 给 BSS 段清零
         dst = (uint8_t*)phdr->p_paddr + phdr->p_filesz;
         // p_memsz - p_filesz 这段多出来的内存就是BSS
