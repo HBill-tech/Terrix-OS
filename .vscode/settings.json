@@ -4,7 +4,9 @@
         "kernel.h": "c",
         "os.h": "c",
         "string.h": "c",
-        "tty.h": "c"
+        "cstdio.h": "c",
+        "tty.h": "c",
+        "stdio.h": "c"
     },
 
     "C_Cpp.errorSquiggles": "disabled"

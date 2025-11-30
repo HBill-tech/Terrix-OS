@@ -7,6 +7,10 @@ void tty_init();
 
 uint32_t tty_write(char *buf, uint32_t count);
 
+void tty_write_char(char c);
+
+int tty_printf(const char *fmt, ...);
+
 void tty_clear();
 
 #endif

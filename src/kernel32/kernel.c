@@ -1,11 +1,14 @@
 #include <kernel.h>
 #include <tty.h>
+#include <stdio.h>
 
 void hlos_init(memory_info_t* mem_info, uint32_t gdt_info)
 {
     tty_init();
-    char *str = "Hello World!";
-    tty_write(str, 12);
+
+    tty_write("hello word!", 12);
+    
+    // tty_printf("hello, %d!", 3434);
 
     while (TRUE);
 }

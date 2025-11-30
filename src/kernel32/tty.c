@@ -41,6 +41,15 @@
 
 // 屏幕首字符在显存的当前位置，字节编址
 static uint32_t screen;
+
+
+/**
+ * 如果 screen 值保持不变
+ * 那么 [screen, screen + SCR_SIZE) 范围内的 cursor 指向的内存块(2B)唯一对应屏幕中的一个字符位
+ * 我们把这个字符位置叫做光标的位置
+ * 修改 cursor 指向的内存块值就可以修改屏幕中光标位置的字符内容
+ */
+
 // 光标在显存的位置，字节编址
 static uint32_t cursor;
 // 光标位置，字符编址
@@ -189,60 +198,68 @@ void tty_clear() {
     {
         *ptr++ = erase;
     }
-    
 }
 
 /**
- * 把给定缓冲区 buffer 中指定长度 count 的字符串输出到屏幕
+ * 把给定缓冲区 buffer 中指定长度 count 的字符串输出到屏幕中当前光标指向的位置
  * @param   buf     给定的缓冲区
  * @param   count   缓冲区长度
  * @return  written 该函数最终输出的字符数
  */
 uint32_t tty_write(char *buf, uint32_t count) {
     char c;
-    char *ptr = (char*)cursor;  // 指向当前游标所在的内存位置，指向一字节数据
     uint32_t written = 0;       // 已输出的字符数量
     while (written++ < count)
     {
-        c = *buf++;     // 获取当前要输出的字符
-        switch (c)
-        {
-            case ASCII_NULL:
-                break;
-            case ASCII_BS:
-                com_bs();
-                break;
-            case ASCII_DEL:
-                com_del();
-                break;
-            case ASCII_CR:
-                com_cr();
-                break;
-            case ASCII_FF:
-                com_lf();
-                break;
-            case ASCII_LF:
-                com_lf();
-                com_cr();
-                break;
-            default:
-                // 在 cusror 指向的位置输出普通字符
-                if (x >= WIDTH) {       // 检查是否到达行尾，更新 x 和 y，不更新 cursor
-                    x -= WIDTH;         // 从这一行的头开始
-                    cursor -= ROW_SIZE; // 游标也跟着退回
-                    com_lf();           // 换到下一行，x 与 cursor 也会更新，这个过程 cursor 没有发生变化
-                }
-                // 此时 ptr 仍与 cursor 指向相同的位置
-                *ptr = c;               // 设置字符内容
-                *(ptr + 1) = attr;      // 设置字符属性
-                // 更新指针
-                ptr += 2;
-                cursor += 2;
-                break;
-        }
+        c = *buf++;             // 获取当前要输出的字符
+        tty_write_char(c);      // 在当前光标位置输出字符
     }
     set_cursor();
     return written;
+}
+
+/**
+ * 在当前光标位置输出一个 ASCII 码字符
+ * @param c 输出的字符内容
+ */
+void tty_write_char(char c) {
+    char *ptr = (char*)cursor;  // 指向当前光标所在的内存位置，指向一字节数据
+    switch (c)
+    {
+        case ASCII_NULL:
+            break;
+        case ASCII_BS:
+            com_bs();
+            break;
+        case ASCII_DEL:
+            com_del();
+            break;
+        case ASCII_CR:
+            com_cr();
+            break;
+        case ASCII_FF:
+            com_lf();
+            break;
+        case ASCII_LF:
+            com_lf();
+            com_cr();
+            break;
+        default:
+            // 更新当前 cursor 对应的 x 和 y，不改变 cursor 值
+            if (x >= WIDTH) {       // 检查是否到达行尾
+                x -= WIDTH;         // 从这一行的头开始
+                cursor -= ROW_SIZE; // 游标也跟着退回
+                com_lf();           // 换到下一行，x 与 cursor 也会更新，这个过程 cursor 没有发生变化
+            }
+
+            // 修改 cursor 指向的数据以实现对光标指向内容的修改
+            *ptr = c;               // 设置字符内容
+            *(ptr + 1) = attr;      // 设置字符属性 
+            // 更新指针
+            ptr += 2;
+            cursor += 2;
+            break;
+    }
 }
 
 void tty_init() {
