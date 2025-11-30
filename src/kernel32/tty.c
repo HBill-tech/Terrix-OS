@@ -220,10 +220,9 @@ uint32_t tty_write(char *buf, uint32_t count) {
 
 /**
  * 在当前光标位置输出一个 ASCII 码字符
- * @param c 输出的字符内容
+ * @param c 输出的字符内容 
  */
 void tty_write_char(char c) {
-    char *ptr = (char*)cursor;  // 指向当前光标所在的内存位置，指向一字节数据
     switch (c)
     {
         case ASCII_NULL:
@@ -252,9 +251,9 @@ void tty_write_char(char c) {
                 com_lf();           // 换到下一行，x 与 cursor 也会更新，这个过程 cursor 没有发生变化
             }
 
-            // 修改 cursor 指向的数据以实现对光标指向内容的修改
-            *ptr = c;               // 设置字符内容
-            *(ptr + 1) = attr;      // 设置字符属性 
+            char *ptr = (char*)cursor;  // 指向当前光标所在的内存位置，指向一字节数据
+            *ptr = c;                   // 设置字符内容
+            *(ptr + 1) = attr;          // 设置字符属性
             // 更新指针
             ptr += 2;
             cursor += 2;
