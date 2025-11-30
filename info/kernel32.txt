@@ -10,7 +10,7 @@ ELF Header:
   Version:                           0x1
   Entry point address:               0x9000
   Start of program headers:          52 (bytes into file)
-  Start of section headers:          14860 (bytes into file)
+  Start of section headers:          15264 (bytes into file)
   Flags:                             0x0
   Size of this header:               52 (bytes)
   Size of program headers:           32 (bytes)
@@ -22,21 +22,21 @@ ELF Header:
 Section Headers:
   [Nr] Name              Type            Addr     Off    Size   ES Flg Lk Inf Al
   [ 0]                   NULL            00000000 000000 000000 00      0   0  0
-  [ 1] .text             PROGBITS        00009000 001000 00076b 00  AX  0   0 16
-  [ 2] .rodata           PROGBITS        0000976c 00176c 00004c 00   A  0   0  4
-  [ 3] .data             PROGBITS        000097b8 0017b8 000004 00  WA  0   0  2
-  [ 4] .bss              NOBITS          000097bc 0017bc 00000c 00  WA  0   0  4
-  [ 5] .debug_aranges    PROGBITS        00000000 0017bc 0000a0 00      0   0  1
-  [ 6] .debug_info       PROGBITS        00000000 00185c 0008c8 00      0   0  1
-  [ 7] .debug_abbrev     PROGBITS        00000000 002124 000403 00      0   0  1
-  [ 8] .debug_line       PROGBITS        00000000 002527 000554 00      0   0  1
-  [ 9] .debug_frame      PROGBITS        00000000 002a80 000348 00      0   0  8
-  [10] .debug_loc        PROGBITS        00000000 002dc8 000534 00      0   0  1
-  [11] .debug_str        PROGBITS        00000000 0032fc 0002cb 01  MS  0   0  1
-  [12] .comment          PROGBITS        00000000 0035c7 000012 01  MS  0   0  1
-  [13] .symtab           SYMTAB          00000000 0035dc 000250 10     14  23  4
-  [14] .strtab           STRTAB          00000000 00382c 00014b 00      0   0  1
-  [15] .shstrtab         STRTAB          00000000 003977 000095 00      0   0  1
+  [ 1] .text             PROGBITS        00009000 001000 0007d0 00  AX  0   0 16
+  [ 2] .rodata           PROGBITS        000097d0 0017d0 000040 00   A  0   0  4
+  [ 3] .data             PROGBITS        00009810 001810 000004 00  WA  0   0  2
+  [ 4] .bss              NOBITS          00009814 001814 00000c 00  WA  0   0  4
+  [ 5] .debug_aranges    PROGBITS        00000000 001814 0000a0 00      0   0  1
+  [ 6] .debug_info       PROGBITS        00000000 0018b4 000910 00      0   0  1
+  [ 7] .debug_abbrev     PROGBITS        00000000 0021c4 000442 00      0   0  1
+  [ 8] .debug_line       PROGBITS        00000000 002606 00059a 00      0   0  1
+  [ 9] .debug_frame      PROGBITS        00000000 002ba0 000368 00      0   0  8
+  [10] .debug_loc        PROGBITS        00000000 002f08 00056c 00      0   0  1
+  [11] .debug_str        PROGBITS        00000000 003474 0002d0 01  MS  0   0  1
+  [12] .comment          PROGBITS        00000000 003744 000012 01  MS  0   0  1
+  [13] .symtab           SYMTAB          00000000 003758 000260 10     14  23  4
+  [14] .strtab           STRTAB          00000000 0039b8 000150 00      0   0  1
+  [15] .shstrtab         STRTAB          00000000 003b08 000095 00      0   0  1
 Key to Flags:
   W (write), A (alloc), X (execute), M (merge), S (strings), I (info),
   L (link order), O (extra OS processing required), G (group), T (TLS),
@@ -47,7 +47,7 @@ There are no section groups in this file.
 
 Program Headers:
   Type           Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg Align
-  LOAD           0x001000 0x00009000 0x00009000 0x007bc 0x007c8 RWE 0x1000
+  LOAD           0x001000 0x00009000 0x00009000 0x00814 0x00820 RWE 0x1000
 
  Section to Segment mapping:
   Segment Sections...
@@ -58,44 +58,45 @@ There is no dynamic section in this file.
 There are no relocations in this file.
 No processor specific unwind information to decode
 
-Symbol table '.symtab' contains 37 entries:
+Symbol table '.symtab' contains 38 entries:
    Num:    Value  Size Type    Bind   Vis      Ndx Name
      0: 00000000     0 NOTYPE  LOCAL  DEFAULT  UND 
      1: 00000000     0 FILE    LOCAL  DEFAULT  ABS src/kernel32/sta[...]
      2: 00000000     0 FILE    LOCAL  DEFAULT  ABS kernel.c
      3: 00000000     0 FILE    LOCAL  DEFAULT  ABS tty.c
-     4: 00009033    29 FUNC    LOCAL  DEFAULT    1 inb
-     5: 00009050    31 FUNC    LOCAL  DEFAULT    1 outb
-     6: 000097bc     4 OBJECT  LOCAL  DEFAULT    4 screen
-     7: 000097c0     4 OBJECT  LOCAL  DEFAULT    4 cursor
-     8: 000097c4     2 OBJECT  LOCAL  DEFAULT    4 x
-     9: 000097c6     2 OBJECT  LOCAL  DEFAULT    4 y
-    10: 000097b8     1 OBJECT  LOCAL  DEFAULT    3 attr
-    11: 000097ba     2 OBJECT  LOCAL  DEFAULT    3 erase
-    12: 0000906f   115 FUNC    LOCAL  DEFAULT    1 get_screen
-    13: 000090e2    95 FUNC    LOCAL  DEFAULT    1 set_screen
-    14: 00009141   186 FUNC    LOCAL  DEFAULT    1 get_cursor
-    15: 000091fb    95 FUNC    LOCAL  DEFAULT    1 set_cursor
-    16: 0000925a    64 FUNC    LOCAL  DEFAULT    1 com_bs
-    17: 0000929a    23 FUNC    LOCAL  DEFAULT    1 com_del
-    18: 000092b1    39 FUNC    LOCAL  DEFAULT    1 com_cr
-    19: 000092d8   175 FUNC    LOCAL  DEFAULT    1 scroll_up
-    20: 00009387    59 FUNC    LOCAL  DEFAULT    1 com_lf
+     4: 0000909c    29 FUNC    LOCAL  DEFAULT    1 inb
+     5: 000090b9    31 FUNC    LOCAL  DEFAULT    1 outb
+     6: 00009814     4 OBJECT  LOCAL  DEFAULT    4 screen
+     7: 00009818     4 OBJECT  LOCAL  DEFAULT    4 cursor
+     8: 0000981c     2 OBJECT  LOCAL  DEFAULT    4 x
+     9: 0000981e     2 OBJECT  LOCAL  DEFAULT    4 y
+    10: 00009810     1 OBJECT  LOCAL  DEFAULT    3 attr
+    11: 00009812     2 OBJECT  LOCAL  DEFAULT    3 erase
+    12: 000090d8   115 FUNC    LOCAL  DEFAULT    1 get_screen
+    13: 0000914b    95 FUNC    LOCAL  DEFAULT    1 set_screen
+    14: 000091aa   186 FUNC    LOCAL  DEFAULT    1 get_cursor
+    15: 00009264    95 FUNC    LOCAL  DEFAULT    1 set_cursor
+    16: 000092c3    64 FUNC    LOCAL  DEFAULT    1 com_bs
+    17: 00009303    23 FUNC    LOCAL  DEFAULT    1 com_del
+    18: 0000931a    39 FUNC    LOCAL  DEFAULT    1 com_cr
+    19: 00009341   175 FUNC    LOCAL  DEFAULT    1 scroll_up
+    20: 000093f0    59 FUNC    LOCAL  DEFAULT    1 com_lf
     21: 00000000     0 FILE    LOCAL  DEFAULT  ABS string.c
     22: 00000000     0 FILE    LOCAL  DEFAULT  ABS stdio.c
-    23: 0000967e    76 FUNC    GLOBAL DEFAULT    1 kernel_memcpy
-    24: 00009765     6 FUNC    GLOBAL DEFAULT    1 vsprintf
-    25: 000096ca    62 FUNC    GLOBAL DEFAULT    1 kernel_memset
-    26: 00009511    61 FUNC    GLOBAL DEFAULT    1 kernel_strcpy
-    27: 00009455   177 FUNC    GLOBAL DEFAULT    1 tty_write_char
-    28: 00009014    31 FUNC    GLOBAL DEFAULT    1 hlos_init
-    29: 00009506    11 FUNC    GLOBAL DEFAULT    1 tty_init
-    30: 0000954e   109 FUNC    GLOBAL DEFAULT    1 kernel_strncpy
-    31: 00009000     0 NOTYPE  GLOBAL DEFAULT    1 _start
-    32: 0000940f    70 FUNC    GLOBAL DEFAULT    1 tty_write
-    33: 00009708    93 FUNC    GLOBAL DEFAULT    1 kernel_memcmp
-    34: 000093c2    77 FUNC    GLOBAL DEFAULT    1 tty_clear
-    35: 00009643    59 FUNC    GLOBAL DEFAULT    1 kernel_strlen
-    36: 000095bb   136 FUNC    GLOBAL DEFAULT    1 kernel_strncmp
+    23: 000096e3    76 FUNC    GLOBAL DEFAULT    1 kernel_memcpy
+    24: 000097ca     6 FUNC    GLOBAL DEFAULT    1 vsprintf
+    25: 0000972f    62 FUNC    GLOBAL DEFAULT    1 kernel_memset
+    26: 00009576    61 FUNC    GLOBAL DEFAULT    1 kernel_strcpy
+    27: 000094be   173 FUNC    GLOBAL DEFAULT    1 tty_write_char
+    28: 0000908a    18 FUNC    GLOBAL DEFAULT    1 hlos_init
+    29: 0000956b    11 FUNC    GLOBAL DEFAULT    1 tty_init
+    30: 000095b3   109 FUNC    GLOBAL DEFAULT    1 kernel_strncpy
+    31: 00009014   118 FUNC    GLOBAL DEFAULT    1 test
+    32: 00009000     0 NOTYPE  GLOBAL DEFAULT    1 _start
+    33: 00009478    70 FUNC    GLOBAL DEFAULT    1 tty_write
+    34: 0000976d    93 FUNC    GLOBAL DEFAULT    1 kernel_memcmp
+    35: 0000942b    77 FUNC    GLOBAL DEFAULT    1 tty_clear
+    36: 000096a8    59 FUNC    GLOBAL DEFAULT    1 kernel_strlen
+    37: 00009620   136 FUNC    GLOBAL DEFAULT    1 kernel_strncmp
 
 No version information found in this file.

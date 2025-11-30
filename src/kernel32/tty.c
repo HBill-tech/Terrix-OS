@@ -52,9 +52,13 @@ static uint32_t screen;
 
 // 光标在显存的位置，字节编址
 static uint32_t cursor;
-// 光标位置，字符编址
-// 这里为什么要用到光标的字符编制坐标呢? 这两个变量并不会直接参与到光标位置的设定中
-// 但是我们可以利用这两个坐标进行更简单的条件判断，并且将 x, y 与 cursor 同步更新。
+
+/**
+ * @param x, y  光标位置，使用字符编址
+ * 既然这两个变量并不会直接参与到光标位置的设定中，那这里为什么要用到光标的字符编制坐标呢? 
+ * 1. 我们可以利用这两个坐标进行更简单的条件判断
+ * 2. x, y 参与到了特殊字符的操作中，如 CR 回车符，如果 x 更新不正确将导致 CR 操作不正确
+ */
 static uint16_t x = 0, y = 0;
 // 字符样式
 static uint8_t attr = 7;
@@ -220,47 +224,54 @@ uint32_t tty_write(char *buf, uint32_t count) {
 
 /**
  * 在当前光标位置输出一个 ASCII 码字符
- * @param c 输出的字符内容 
+ * @param c 输出的字符内容
  */
 void tty_write_char(char c) {
     switch (c)
     {
-        case ASCII_NULL:
+        case ASCII_NULL:    // 空字符
             break;
-        case ASCII_BS:
+        case ASCII_BS:      // 退格
             com_bs();
             break;
-        case ASCII_DEL:
+        case ASCII_DEL:     // 删除
             com_del();
             break;
-        case ASCII_CR:
+        case ASCII_CR:      // 回车
             com_cr();
             break;
-        case ASCII_FF:
+        case ASCII_FF:      // 换行
             com_lf();
             break;
-        case ASCII_LF:
+        case ASCII_LF:      // 回车 + 换行
             com_lf();
             com_cr();
             break;
         default:
-            // 更新当前 cursor 对应的 x 和 y，不改变 cursor 值
-            if (x >= WIDTH) {       // 检查是否到达行尾
-                x -= WIDTH;         // 从这一行的头开始
-                cursor -= ROW_SIZE; // 游标也跟着退回
-                com_lf();           // 换到下一行，x 与 cursor 也会更新，这个过程 cursor 没有发生变化
-            }
+            // 输出非功能性字符
 
+            // 保证光标所在的位置写入内容
             char *ptr = (char*)cursor;  // 指向当前光标所在的内存位置，指向一字节数据
             *ptr = c;                   // 设置字符内容
             *(ptr + 1) = attr;          // 设置字符属性
-            // 更新指针
-            ptr += 2;
+
+            // 保证屏幕窗口能显示光标所在的位置
+            if (x >= WIDTH) {           // 检查是否到达行尾
+                x -= WIDTH;             // 计算出 x 在新的一行的横坐标
+                cursor -= ROW_SIZE;     // cursor 向前退一行
+                com_lf();               // 这里会将 cursor 的值复原
+            }
+
+            // 更新指针与坐标
             cursor += 2;
+            x += 1;
             break;
     }
 }
 
+/**
+ * tty 打印功能初始化
+ */
 void tty_init() {
     tty_clear();
 }
