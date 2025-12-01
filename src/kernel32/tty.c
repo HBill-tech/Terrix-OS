@@ -2,6 +2,8 @@
 #include <kernel.h>
 #include <tty.h>
 
+/***************************************** 宏定义 **********************************************/
+
 // 将 CRT_ADDR_REG 设置为具体的寄存器索引，从而使得 CRT_DATA_REG 成为该寄存器的 “代理”
 // 这两个宏定义了与CRT控制器通信的I/O端口，用于配置显示参数
 #define CRT_ADDR_REG        0x3D4   // CRT控制器地址寄存器的端口
@@ -37,18 +39,12 @@
 #define ASCII_VT    0x0B    // 垂直制表符
 #define ASCII_FF    0x0C    // 换页符
 #define ASCII_CR    0x0D    // 回车符
-#define ASCII_DEL   0x0F    // 删除字符
+#define ASCII_DEL   0x7F    // 删除字符
+
+/********************************************* 全局变量定义 ******************************************/
 
 // 屏幕首字符在显存的当前位置，字节编址
 static uint32_t screen;
-
-
-/**
- * 如果 screen 值保持不变
- * 那么 [screen, screen + SCR_SIZE) 范围内的 cursor 指向的内存块(2B)唯一对应屏幕中的一个字符位
- * 我们把这个字符位置叫做光标的位置
- * 修改 cursor 指向的内存块值就可以修改屏幕中光标位置的字符内容
- */
 
 // 光标在显存的位置，字节编址
 static uint32_t cursor;
@@ -64,6 +60,9 @@ static uint16_t x = 0, y = 0;
 static uint8_t attr = 7;
 // 空格字符，两字节大小
 static uint16_t erase = 0x0720;
+
+
+/***************************** CRT(阴极射线管)寄存器的 getter 和 setter方法 **************************/
 
 /**
  * 向 screen 中读取当前屏幕第一个字符在显存中的位置
@@ -121,6 +120,7 @@ static void set_cursor() {
     outb(CRT_DATA_REG, ((cursor - MEM_BASE) >> 1) & 0xFF);
 }
 
+/*************************************** ASCII码操作 ****************************************/
 /**
  * 退格操作
  */
@@ -129,7 +129,7 @@ static void com_bs() {
     {
         x--;
         // 光标地址前移两个字节
-        cursor -= 2;
+        cursor-=2;
         *(uint16_t*)cursor = erase;
     }
 }
@@ -151,14 +151,14 @@ static void com_cr() {
 }
 
 /**
- * 滚动屏幕 
+ * 滚动屏幕
  */
 static void scroll_up() {
-    // 如果当前显示区域加上一行就超出显存末尾，需要重置
+    // 如果当前显示区域加上一行就超出显存末尾，则将屏幕内容放在显存开始位置
     if (screen + SCR_SIZE + ROW_SIZE >= MEM_END) {
-        kernel_memcpy((uint32_t*)MEM_BASE, (uint32_t*)screen, SCR_SIZE);    // 将屏幕内容放在显存开始位置
-        cursor -= (screen - MEM_BASE);      // 重新设置游标地址
-        screen = MEM_BASE;                  // 重新设置屏幕开始字符的地址
+        kernel_memcpy((uint32_t*)MEM_BASE, (uint32_t*)screen, SCR_SIZE);    
+        cursor -= (screen - MEM_BASE);
+        screen = MEM_BASE;
     }
     // 清理即将展示的一行
     uint32_t *ptr = (uint32_t*)(screen + SCR_SIZE);
@@ -169,8 +169,9 @@ static void scroll_up() {
     // 屏幕和游标都向下滚动一行
     screen += ROW_SIZE;
     cursor += ROW_SIZE;
-    // 显示这样的屏幕内容
+
     set_screen();
+    set_cursor();
 }
 
 /**
@@ -184,6 +185,15 @@ static void com_lf() {
         return;
     }
     scroll_up();
+}
+
+/******************************************* tty 功能函数 **************************************/
+
+/**
+ * tty 打印功能初始化
+ */
+void tty_init() {
+    tty_clear();
 }
 
 /**
@@ -215,8 +225,8 @@ uint32_t tty_write(char *buf, uint32_t count) {
     uint32_t written = 0;       // 已输出的字符数量
     while (written++ < count)
     {
-        c = *buf++;             // 获取当前要输出的字符
-        tty_write_char(c);      // 在当前光标位置输出字符
+        c = *buf++;
+        tty_write_char(c);
     }
     set_cursor();
     return written;
@@ -250,16 +260,14 @@ void tty_write_char(char c) {
         default:
             // 输出非功能性字符
 
-            // 保证光标所在的位置写入内容
-            char *ptr = (char*)cursor;  // 指向当前光标所在的内存位置，指向一字节数据
-            *ptr = c;                   // 设置字符内容
-            *(ptr + 1) = attr;          // 设置字符属性
+            char *ptr = (char*)cursor;  // 指向当前光标内存位置处的一字节数据
+            *ptr = c;
+            *(ptr + 1) = attr;
 
-            // 保证屏幕窗口能显示光标所在的位置
-            if (x >= WIDTH) {           // 检查是否到达行尾
-                x -= WIDTH;             // 计算出 x 在新的一行的横坐标
-                cursor -= ROW_SIZE;     // cursor 向前退一行
-                com_lf();               // 这里会将 cursor 的值复原
+            if (x >= WIDTH) {
+                x -= WIDTH;             // 计算出游标换行后的横坐标
+                cursor -= ROW_SIZE;
+                com_lf();               // 这里会复原 cursor
             }
 
             // 更新指针与坐标
@@ -269,9 +277,6 @@ void tty_write_char(char c) {
     }
 }
 
-/**
- * tty 打印功能初始化
- */
-void tty_init() {
-    tty_clear();
+int tty_printf(const char *fmt, ...) {
+    
 }
