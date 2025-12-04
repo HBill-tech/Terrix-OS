@@ -217,7 +217,12 @@ void tty_clear() {
 }
 
 /**
- * 把给定缓冲区 buffer 中指定长度 count 的字符串输出到屏幕中当前光标指向的位置
+ * 把给定缓冲区 buffer 中指定长度 count 的字符串输出到屏幕中当前光标指向的位置，如果屏幕显示不下则会滚屏显示。
+ * 
+ * tty_init之后，如果所有函数都通过调用 tty_write 来显示文字，那么
+ *      1.cursor 一定在 [screen, screen + SCR_SIZE + 2] 范围内
+ *      2.写入的字符一定不会越界显存
+ * 
  * @param   buf     给定的缓冲区
  * @param   count   缓冲区长度
  * @return  written 该函数最终输出的字符数
@@ -228,14 +233,17 @@ uint32_t tty_write(char *buf, uint32_t count) {
     while (written++ < count)
     {
         c = *buf++;
-        tty_write_char(c);
+        tty_write_char(c);      // cursor 范围在[screen, screen + SCR_SIZE + 2]
     }
     set_cursor();
     return written;
 }
 
 /**
- * 在当前光标位置输出一个 ASCII 码字符
+ * 在当前光标位置输出一个 ASCII 码字符，如果屏幕显示不下会滚屏显示
+ * 
+ * cursor 输入的域包含 [screen, screen + SCR_SIZE + 2]
+ * 
  * @param c 输出的字符内容
  */
 void tty_write_char(char c) {
@@ -268,7 +276,8 @@ void tty_write_char(char c) {
                 cursor -= ROW_SIZE;
                 com_lf();               // 这里会复原 cursor
             }
-
+            
+            // 在光标位置写入字符
             char *ptr = (char*)cursor;  // 指向当前光标内存位置处的一字节数据
             *ptr = c;
             *(ptr + 1) = attr;
