@@ -1,6 +1,8 @@
 #include <string.h>
 #include <kernel.h>
 #include <tty.h>
+#include <stdarg.h>
+#include <stdio.h>
 
 /***************************************** 宏定义 **********************************************/
 
@@ -240,7 +242,7 @@ void tty_write_char(char c) {
     switch (c)
     {
         case ASCII_NULL:    // 空字符
-            break;
+            break; 
         case ASCII_BS:      // 退格
             com_bs();
             break;
@@ -260,15 +262,16 @@ void tty_write_char(char c) {
         default:
             // 输出非功能性字符
 
-            char *ptr = (char*)cursor;  // 指向当前光标内存位置处的一字节数据
-            *ptr = c;
-            *(ptr + 1) = attr;
-
+            // 当 x 超出屏幕宽度的处理逻辑
             if (x >= WIDTH) {
                 x -= WIDTH;             // 计算出游标换行后的横坐标
                 cursor -= ROW_SIZE;
                 com_lf();               // 这里会复原 cursor
             }
+
+            char *ptr = (char*)cursor;  // 指向当前光标内存位置处的一字节数据
+            *ptr = c;
+            *(ptr + 1) = attr;
 
             // 更新指针与坐标
             cursor += 2;
@@ -277,6 +280,11 @@ void tty_write_char(char c) {
     }
 }
 
+/**
+ * 可变参数的 printf
+ * @param   fmt   格式化字符串
+ * @param   ...   可变参数列表
+ */
 int tty_printf(const char *fmt, ...) {
-    
+    // 敬请期待
 }
