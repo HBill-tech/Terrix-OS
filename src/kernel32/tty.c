@@ -219,9 +219,10 @@ void tty_clear() {
 /**
  * 把给定缓冲区 buffer 中指定长度 count 的字符串输出到屏幕中当前光标指向的位置，如果屏幕显示不下则会滚屏显示。
  * 
- * tty_init之后，如果所有函数都通过调用 tty_write 来显示文字，那么
- *      1.cursor 一定在 [screen, screen + SCR_SIZE + 2] 范围内
- *      2.写入的字符一定不会越界显存
+ * tty_init之后，如果所有函数都通过调用 tty_write 来显示文字，运行了tty_write之后
+ *      1.字符串所有字符依次正常输出
+ *      2.光标位置一定在屏幕中
+ *      3.写入的字符一定不会越界显存
  * 
  * @param   buf     给定的缓冲区
  * @param   count   缓冲区长度
@@ -288,12 +289,23 @@ void tty_write_char(char c) {
             break;
     }
 }
+ 
+#define BUFFER_SIZE 1024
+static char buf[BUFFER_SIZE];
 
 /**
  * 可变参数的 printf
  * @param   fmt   格式化字符串
  * @param   ...   可变参数列表
+ * @return  i     打印出的字符串长度
  */
 int tty_printf(const char *fmt, ...) {
-    // 敬请期待
+    kernel_memset(buf, 0, BUFFER_SIZE);
+    va_list args;
+    int i;
+    va_start(args, fmt);            // 开始访问可变参数列表
+    i = vsprintf(buf, fmt, args);   // i 表示将fmt插入数据之后写入到缓冲区的长度
+    va_end(args);                       // 结束访问可变参数列表
+    tty_write(buf, (uint32_t)i);
+    return i;                       // 返回打印的字符串长度
 }

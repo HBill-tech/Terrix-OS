@@ -1,0 +1,190 @@
+(* 本文档只用来简单说明形式化方法在证明单个函数的正确性以及组合验证的流程，并不具有实际应用意义 *)
+
+(* 写需求 → 转化为形式化规约 → 证明形式化规约 *)
+
+(* /src/kernel32/tty.c->tty_write函数的简要形式化规约 *)
+
+(* 常量定义 *)
+Defination MEM_BASE: nat := 0xB8000.
+Definition SCR_SIZE: nat := 80 * 25 * 2.  (* 4000字节 *)
+Definition MEM_END: nat := MEM_BASE + SCR_SIZE.
+Definition MAX_WRITE_SIZE: nat := 1024.
+
+Precondition tty_write_pre(buf: ptr, count: nat, screen: ptr, cursor: ptr):
+    buf != NULL && 
+    count <= MAX_WRITE_SIZE &&
+    MEM_BASE <= screen < MEM_END &&
+    MEM_BASE <= cursor < MEM_END &&
+    screen <= cursor < screen + SCR_SIZE.
+
+Postcondition tty_write_post(buf, count, result: nat, screen, cursor):
+    result <= count &&
+    MEM_BASE <= screen < MEM_END &&
+    MEM_BASE <= cursor < MEM_END &&
+    screen <= cursor < screen + SCR_SIZE &&
+    forall i: nat, i < result ->
+        [cursor + 2*i] = buf[i].
+
+(* 证明覆盖所有情况 *)
+Theorem tty_write_total_correctness:
+  (* 对于所有可能的输入 *)
+  forall (buf: ptr) (count: nat) (screen cursor: ptr),
+    (* 如果满足前置条件 *)
+    tty_write_pre(buf, count, screen, cursor) ->
+    (* 那么执行后满足后置条件 *)
+    exists (result: nat) (new_cursor: ptr),
+      tty_write(buf, count) = (result, new_cursor) /\
+      tty_write_post(buf, count, result, screen, new_cursor, cursor).
+
+Proof.
+  (* 这个证明必须处理：
+     1. 所有可能的buf值（有效指针、NULL、任意地址）
+     2. 所有可能的count值（0到2^64-1）
+     3. 所有可能的屏幕/光标位置
+     4. 所有可能的内存状态
+  *)
+  auto.
+Qed.
+
+
+(* 单个函数验证完是不够的，还需要验证整个系统，于是引入了组合验证 *)
+(* 系统调用接口规约 *)
+Module SyscallInterface.
+
+(* 系统调用编号 *)
+Inductive syscall_id : Type :=
+  | SYS_READ
+  | SYS_WRITE
+  | SYS_OPEN
+  | SYS_CLOSE
+  | SYS_FORK
+  | SYS_EXEC
+  | SYS_EXIT.
+
+(* 系统调用规约 *)
+Record syscall_spec : Type := {
+  syscall_id : syscall_id;
+  pre_condition : process_state -> args -> Prop;
+  post_condition : process_state -> args -> result -> process_state -> Prop;
+  preserves_invariants : Prop;  (* 保持系统不变量 *)
+}.
+
+(* 整个系统调用表的正确性 *)
+Theorem syscall_table_correct:
+  forall (id: syscall_id) (p: process_state) (args: list val) (result: val),
+    (* 如果满足前置条件 *)
+    syscall_pre id p args ->
+    (* 那么执行后满足后置条件 *)
+    exists p',
+      execute_syscall id p args = (result, p') /\
+      syscall_post id p args result p' /\
+      (* 并且保持系统全局不变量 *)
+      system_invariant p'.
+Proof.
+  (* 对每个系统调用分别证明 *)
+  destruct id;
+  [ (* SYS_READ *)  apply sys_read_correct
+  | (* SYS_WRITE *) apply sys_write_correct
+  | (* SYS_OPEN *)  apply sys_open_correct
+  | ... ].
+Qed.
+
+End SyscallInterface.
+
+(* 第1层：硬件抽象层（HAL） *)
+Module HardwareAbstraction.
+  (* 验证：内存管理单元（MMU） *)
+  Theorem mmu_correct:
+    forall virt_addr phys_addr,
+      translate_address virt_addr = Some phys_addr ->
+      can_access phys_addr.
+  Proof. ... Qed.
+  
+  (* 验证：中断控制器 *)
+  Theorem interrupt_controller_correct:
+    forall irq_num,
+      handle_interrupt irq_num ->
+      no_interrupt_lost.
+  Proof. ... Qed.
+End HardwareAbstraction.
+
+(* 第2层：内核核心层 *)
+Module KernelCore.
+  (* 使用HAL提供的抽象 *)
+  Import HardwareAbstraction.
+  
+  (* 验证：进程调度器 *)
+  Theorem scheduler_correct:
+    forall ready_queue current,
+      schedule ready_queue current ->
+      (* 公平性 *)
+      fair_scheduling /\
+      (* 无饥饿 *)
+      no_starvation /\
+      (* 保持隔离 *)
+      process_isolation_preserved.
+  Proof. ... Qed.
+  
+  (* 验证：虚拟内存系统 *)
+  Theorem vmem_correct:
+    forall process page,
+      allocate_page process page ->
+      (* 隔离性 *)
+      other_processes_cannot_access page /\
+      (* 安全性 *)
+      page_initialized_to_zero.
+  Proof. ... Qed.
+End KernelCore.
+
+(* 第3层：系统服务层 *)
+Module SystemServices.
+  Import KernelCore.
+  
+  (* 验证：文件系统 *)
+  Theorem filesystem_correct:
+    forall op inode data,
+      filesystem_operation op inode data ->
+      (* 持久性 *)
+      data_persisted /\
+      (* 一致性 *)
+      fs_consistent /\
+      (* 原子性 *)
+      operation_atomic.
+  Proof. ... Qed.
+  
+  (* 验证：网络协议栈 *)
+  Theorem tcp_ip_correct:
+    forall packet src dst,
+      send_packet packet src dst ->
+      (* 可靠性 *)
+      packet_eventually_delivered /\
+      (* 有序性 *)
+      packets_in_order /\
+      (* 安全性 *)
+      no_information_leakage.
+  Proof. ... Qed.
+End SystemServices.
+
+(* 关键：证明子系统组合后保持性质 *)
+Theorem system_composition_correct:
+  (* 如果每个组件都正确 *)
+  HardwareAbstraction.correct /\
+  KernelCore.correct /\
+  SystemServices.correct ->
+  (* 那么整个系统正确 *)
+  System.correct.
+Proof.
+  intros [H_hw H_kernel H_services].
+  
+  (* 证明组合性质 *)
+  (* 1. 硬件正确性传播到内核 *)
+  assert (H_kernel_with_hw: KernelCore.correct_with_hardware).
+  { apply compose_hardware_kernel; assumption. }
+  
+  (* 2. 内核正确性传播到服务 *)
+  assert (H_services_with_kernel: SystemServices.correct_with_kernel).
+  { apply compose_kernel_services; assumption. }
+  
+  (* 3. 最终系统正确性 *)
+  apply compose_all_components; assumption.
+Qed.
