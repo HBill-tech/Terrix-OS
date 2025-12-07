@@ -81,11 +81,11 @@ char *number(char *str, int num, int base, int size, int precision, int type) {
         sign = (type & PLUS) ? '+' : (type & SPACE) ? ' ' : 0;
     }
 
-    // 符号占用的缓冲区空间
+    // 符号占用的缓冲区宽度
     if (sign) {
         size--;
     }
-    // 进制标识站用的缓冲区空间
+    // 进制标识站用的缓冲区宽度
     if (type & SPECIAL) {
         if (base == 16) {
             size -= 2;
@@ -113,7 +113,7 @@ char *number(char *str, int num, int base, int size, int precision, int type) {
     size -= precision;  // 剩余宽度减去数字长度
     
     /**
-     * 不用零填充且不左对齐
+     * 空格填充 且 右对齐
      * 符号、前缀之前输出空格
      */
     if (!(type & (ZEROPAD | LEFT))) {
@@ -127,6 +127,7 @@ char *number(char *str, int num, int base, int size, int precision, int type) {
     /**
      * 如果是右对齐，空格填充，符号应该在空格之后
      * 如果是右对齐，0填充，符号应该在空格之前
+     * 如果是左对齐，这是输出的第一个字符
      */
     if (sign) {     // 如果有符号字符
         *str++ = sign;
@@ -142,8 +143,7 @@ char *number(char *str, int num, int base, int size, int precision, int type) {
     }
 
     /**
-     * 不是左对齐
-     * 此判断只会在 零填充 非左对齐 时候执行
+     * 此判断只会在 零填充 右对齐 时候执行
      * 符号、前缀之后，数字之前输出补位字符
      */
     if (!(type & LEFT))
@@ -158,7 +158,7 @@ char *number(char *str, int num, int base, int size, int precision, int type) {
     /**
      * 如果数字长度没有精度要求长，那么要高位补零
      */
-    while (i < precision)  
+    while (i < precision)
     {
         *str++ = '0';
         precision--;
@@ -174,7 +174,7 @@ char *number(char *str, int num, int base, int size, int precision, int type) {
     }
 
     /**
-     * 如果是右对齐，前面的字符都输入完了，用空格填充最后的内容
+     * 如果是对左对齐，前面的字符都输入完了，用空格填充最后的内容
      */
     while (size > 0)
     {
