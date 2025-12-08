@@ -16,8 +16,8 @@ void test(int a, ...) {
 
 void hlos_init(memory_info_t* mem_info, uint32_t gdt_info)
 {
-    // test(3, 789, 88);+
     tty_init();
     int a = 335;
-    tty_printf("hellow %u \n %m", a);
+    tty_printf("hello, world!\n");
+    tty_printf("I LOVE U GSY! %d", 1314520);
 }

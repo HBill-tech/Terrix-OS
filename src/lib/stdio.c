@@ -54,7 +54,7 @@ static int skip_atoi(const char **s) {
 })
 
 /**
- * 将整数转换为指定进制的字符串
+ * 将整数转换为指定格式的字符串，tty_printf的核心逻辑在这里.
  * @param   str       输出缓冲区指针
  * @param   num       要转换的数字
  * @param   base      进制 [2, 36]
@@ -307,6 +307,11 @@ int vsprintf(char *buf, const char *fmt, va_list args) {
         /* 按照指定类型输出 */
         switch (*fmt)
         {
+            /**
+             * 接下来的几种数字处理类型中，都会将从参数列表中拿到的数字做类型强制转化然后传递给 number 函数.
+             * 如果 tty_printf 中该格式化标志符对应的参数类型强转之后值不变，那么这样的输入对于该标志符是合法的，
+             * 否则是不合法的，或者我们可以理解为该标符服兼容某些不同的类型，如 %d 兼容 unsigned int.
+             */
             case 'c':
                 if (!(flags & LEFT)) {  // 右对齐
                     while (--field_width > 0) {
@@ -369,8 +374,19 @@ int vsprintf(char *buf, const char *fmt, va_list args) {
                 flags |= SPECIAL;
                 str = number(str, va_arg(args, unsigned long), 16, field_width, precision, flags);
                 break;
-            
             case 'u':
+                /**
+                 * 这里没有设置 SIGN，说明 number 按照无符号数字的方法将该数字转化为字符串.
+                 * 因此 number 输入的数字需要是无符号数, 如果是负数将产生错误.
+                 * 于是我们让 %u 在可变参数列表中对应的数在这被强制转化为无符号数，然后输出.
+                 * 
+                 * %u -> 输出无符号整数流程: 
+                 *      1.%u 被 tty_printf 接收
+                 *      2.传入 vsprintf 被解析成 flags
+                 *      3.将要输入的数字转化为符合 number 在该 flags 下合理的类型
+                 *      4.然后通过 number 函数按照 flags 指定的格式输出
+                 * 
+                 */
                 str = number(str, va_arg(args, unsigned long), 10, field_width, precision, flags);
                 break;
             case 'n':

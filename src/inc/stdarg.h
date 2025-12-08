@@ -16,7 +16,7 @@ typedef char * va_list;
 /**
  * 访问列表中下一个变量
  * @param ap    va_list 类型的指针
- * @param type  将要访问的变量类型，大小小于4字节
+ * @param type  将要访问的变量类型，长度小于4字节
  */
 #define va_arg(arg_p, type)   (*(type*)(((arg_p) += sizeof(char*)) - sizeof(char*)))
 /**
