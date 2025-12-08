@@ -64,13 +64,14 @@ static int skip_atoi(const char **s) {
  * 
  * @return  str       写入该数字之后，指针在缓冲区中指向的位置，方便调用者接着写
  * 
- * type & FLAG = True 说明 type 中含有这个 Flag，反之不含有
+ * type & FLAG = True 说明 type 中含有这个 Fl ag，反之不含有
  */
 static char *number(char *str, int num, int base, int size, int precision, int type) {
     char padding, sign, tmp[36];
     const char * digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     int i;
 
+    /******************************* 检查标志位的内容 *********************************/
     if (type & SMALL) {
         digits = "0123456789abcdefghijklmnopqrstuvwxyz";
     }
@@ -90,7 +91,7 @@ static char *number(char *str, int num, int base, int size, int precision, int t
         sign = (type & PLUS) ? '+' : (type & SPACE) ? ' ' : 0;
     }
 
-    // 符号占用的缓冲区宽度
+    // 减去符号占用的缓冲区宽度
     if (sign) {
         size--;
     }
@@ -112,15 +113,18 @@ static char *number(char *str, int num, int base, int size, int precision, int t
     } else {
         while (num != 0) {
             // 除 n 取余法由 10 进制转 n 进制，此时 tmp 存储 n 进制数字的倒序
-            tmp[i++] = do_div(num, base) + '0';
+            int res = do_div(num, base);
+            tmp[i++] = digits[res];
         }
     }
 
-    if (i > precision) {
+    if (i > precision) {    // 这里可以有效处理 precision = -1 的情况
         precision = i;
     }
     size -= precision;  // 剩余宽度减去数字长度
     
+
+    /********************************** 开始向 str 中写入数字 ******************************/
     /**
      * 空格填充 且 右对齐
      * 符号、前缀之前输出空格
@@ -201,10 +205,10 @@ static char *number(char *str, int num, int base, int size, int precision, int t
  * @return  args    可变参数列表 
  */
 int vsprintf(char *buf, const char *fmt, va_list args) {
-    int len;
-    int i;
+    int len;            // 存储 %s 情况中的字符串长度
+    int i;              // for 循环的循环变量
     char * str;         // 跟踪缓冲区的当前位置
-    char * s;
+    char * s;           // 处理 %s 情况时存储字符串指针
     int * ip;
     int condition;      // do - while 循环中用到的判断变量
 
@@ -303,104 +307,86 @@ int vsprintf(char *buf, const char *fmt, va_list args) {
         /* 按照指定类型输出 */
         switch (*fmt)
         {
-            // case 'c':
-            //     if (!(flags & LEFT)) {  // 右对齐
-            //         while (--field_width > 0) {
-            //             *str++ = ' ';   // 左侧补空格
-            //         }   
-            //     }
-            //     *str++ = ()va_arg(args, int)
-                
-            //     break;
-            // case 's':
-            //     break;
-            // case 'o':
-            //     break;
-            // case 'p':
-            //     break;
-            // case 'x':
-            //     break;
-            // case 'X':
-            //     break;
-            // case 'd':
-            //     break;
-            // case 'i':
-            //     break;
-            // case 'u':
-            //     break;
-            // case 'n':
-            //     break;
-            // default:
-            //     break;
             case 'c':
-                if (!(flags & LEFT))
-                    while (--field_width > 0)
-                        *str++ = ' ';
-                *str++ = (unsigned char) va_arg(args, int);
-                while (--field_width > 0)
+                if (!(flags & LEFT)) {  // 右对齐
+                    while (--field_width > 0) {
+                        *str++ = ' ';   // 左侧补空格
+                    }   
+                }
+                *str++ = va_arg(args, char);
+                while (--field_width > 0) { // 左对齐
                     *str++ = ' ';
+                }
                 break;
-
-            case 's':
-                s = va_arg(args, char *);
-                len = kernel_strlen(s);
-                if (precision < 0)
-                    precision = len;
-                else if (len > precision)
-                    len = precision;
-
-                if (!(flags & LEFT))
-                    while (len < field_width--)
-                        *str++ = ' ';
-                for (i = 0; i < len; ++i)
-                    *str++ = *s++;
-                while (len < field_width--)
-                    *str++ = ' ';
+            case 'd':
+                flags |= SIGN;  // %d 输出有符号数
+                // 不用管 field_width，如果小于零，那么 number 中仅仅是不填充了，也就是紧密输出
+                str = number(str, va_arg(args, int), 10, field_width, precision, flags);
                 break;
-
+            case 'i':
+                flags |= SIGN;  // %d 输出有符号数
+                // 不用管 field_width，如果小于零，那么 number 中仅仅是不填充了，也就是紧密输出
+                str = number(str, va_arg(args, int), 10, field_width, precision, flags);
+                break;
             case 'o':
-                str = number(str, va_arg(args, unsigned long), 8,
-                field_width, precision, flags);
+                flags |= SPECIAL;
+                str = number(str, va_arg(args, unsigned int), 8, field_width, precision, flags);
                 break;
-
             case 'p':
                 if (field_width == -1) {
                     field_width = 8;
-                    flags |= ZEROPAD;
                 }
-                str = number(str,
-                             (unsigned long) va_arg(args, void *), 16,
-                field_width, precision, flags);
+                flags |= ZEROPAD;
+                flags |= SPECIAL;
+                str = number(str, (unsigned long) va_arg(args, void *), 16, field_width, precision, flags);
                 break;
-
+            case 's':
+                s = va_arg(args, char *);
+                len = kernel_strlen(s);
+                if (precision < 0) {
+                    precision = len;
+                } else if (precision < len) {   // 精度小于len，那么只输出精度的长度
+                    len = precision;
+                }
+                if (!(flags & LEFT)) {      // 右对齐
+                    while (len < field_width--) {
+                        *str++ = ' ';
+                    }
+                }
+                for (i = 0; i < len; i++) {
+                    *str++ = *s++;
+                }
+                while (len < field_width--) {   // 左对齐
+                    *str++ = ' ';
+                }
+                break;
             case 'x':
+                flags |= SPECIAL;
                 flags |= SMALL;
+                str = number(str, va_arg(args, unsigned long), 16, field_width, precision, flags);
+                break;
             case 'X':
-                str = number(str, va_arg(args, unsigned long), 16,
-                field_width, precision, flags);
+                flags |= SPECIAL;
+                str = number(str, va_arg(args, unsigned long), 16, field_width, precision, flags);
                 break;
-
-            case 'd':
-            case 'i':
-                flags |= SIGN;
+            
             case 'u':
-                str = number(str, va_arg(args, unsigned long), 10,
-                field_width, precision, flags);
+                str = number(str, va_arg(args, unsigned long), 10, field_width, precision, flags);
                 break;
-
             case 'n':
-                ip = va_arg(args, int *);
+                ip = va_arg(args, int*);
                 *ip = (str - buf);
                 break;
 
             default:
-                if (*fmt != '%')
+                if (*fmt == '%') {  // 如果这个字符是是百分号，那么%%输出%
                     *str++ = '%';
-                if (*fmt)
+                } else if(*fmt) {   // 未知字符，输出 %[未知字符]
+                    *str++ = '%';
                     *str++ = *fmt;
-                else
-                    --fmt;
-                break;
+                } else {    // 当前字符是字符串末尾 '\0'
+                    fmt--;  // 格式化字符串回退一位，保证循环正确结束
+                }
         }
     }
 

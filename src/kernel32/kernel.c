@@ -2,27 +2,22 @@
 #include <tty.h>
 #include <stdio.h>
 
-void test() {
+void test(int a, ...) {
+    va_list args;
+    va_start(args, a);
+    // int p = *(int*)args;
 
-    // char buffer[1024];
-    // char* ptr = buffer;
-
-    // // ptr = number(ptr, -530, 10, 10, 5, ZEROPAD | SIGN);
-
-    // tty_write("hlos/$HOME/usr> ", 16);
-    // tty_write(buffer, 12);
-
-
-    // tty_write("\x7F", 1);
-
+    int n = va_arg(args, int);
+    int k = va_arg(args, int);
+    // int c = *(int*)args;
+    va_end(args);
 }
+
 
 void hlos_init(memory_info_t* mem_info, uint32_t gdt_info)
 {
+    // test(3, 789, 88);+
     tty_init();
-    
-    // tty_write("hello world!", 12);
-    tty_printf("hello world! %d", 1111);
-
-    while(TRUE);
+    int a = 335;
+    tty_printf("hellow %u \n %m", a);
 }

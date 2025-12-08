@@ -12,13 +12,13 @@ typedef char * va_list;
  * @param ap    va_list 类型的指针
  * @param v     最后一个固定参数
  */
-#define va_start(arg_p, last) ((arg_p) = (va_list)((char*)&(last) + sizeof(last)))
+#define va_start(arg_p, last) ((arg_p) = (va_list)((char*)&(last) + sizeof(char*)))
 /**
  * 访问列表中下一个变量
  * @param ap    va_list 类型的指针
- * @param t     将要访问的变量类型
+ * @param type  将要访问的变量类型，大小小于4字节
  */
-#define va_arg(ap, t)   (*(t*)((ap) += sizeof(char*)) - sizeof(char*))
+#define va_arg(arg_p, type)   (*(type*)(((arg_p) += sizeof(char*)) - sizeof(char*)))
 /**
  * 结束访问: ap 赋值为 NULL，防止后续错误访问该列表
  * @param ap    当前的 va_list 指针
