@@ -4,12 +4,12 @@
 
 void test() {
 
-    char buffer[1024];
-    char* ptr = buffer;
+    // char buffer[1024];
+    // char* ptr = buffer;
 
-    ptr = number(ptr, -530, 10, 10, 5, ZEROPAD | SIGN);
+    // // ptr = number(ptr, -530, 10, 10, 5, ZEROPAD | SIGN);
 
-    tty_write("hlos/$HOME/usr> ", 16);
+    // tty_write("hlos/$HOME/usr> ", 16);
     // tty_write(buffer, 12);
 
 
@@ -20,10 +20,9 @@ void test() {
 void hlos_init(memory_info_t* mem_info, uint32_t gdt_info)
 {
     tty_init();
-
-    test();
     
-    // tty_printf("hello world! %d", 1254);
+    // tty_write("hello world!", 12);
+    tty_printf("hello world! %d", 1111);
 
     while(TRUE);
 }

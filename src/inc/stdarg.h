@@ -12,7 +12,7 @@ typedef char * va_list;
  * @param ap    va_list 类型的指针
  * @param v     最后一个固定参数
  */
-#define va_start(ap, v) ((ap) = (va_list)&(v) + sizeof(char*))
+#define va_start(arg_p, last) ((arg_p) = (va_list)((char*)&(last) + sizeof(last)))
 /**
  * 访问列表中下一个变量
  * @param ap    va_list 类型的指针

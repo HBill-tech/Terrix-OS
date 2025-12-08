@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <kernel.h>
+#include <types.h>
+#include <string.h>
 
 #define is_digit(c)     ((c) >= '0' && (c) <= '9')      // 判断一个 ASCII 码是否是数字
 
@@ -20,7 +22,14 @@ static int skip_atoi(const char **s) {
     return itg;
 }
 
-
+/************************************* 定义 vsprintf 中的格式化标志宏 **********************************/
+#define ZEROPAD     1   // 用 0 填充空白，否则使用空格      %08d → 数字宽度不足8位时在前面补0
+#define SIGN        2   // 指示当前处理的是有符号数，可能输出负号
+#define PLUS        4   // 正数前显示加号    %+d → 正数显示为"+123"，负数显示为"-123"
+#define SPACE       8   // 正数前加空格      % d → 正数显示为" 123"，负数显示为"-123"
+#define LEFT        16  // 左对齐           %-10s → 字符串左对齐，右侧填充空格
+#define SPECIAL     32  // 特殊前缀         8 进制前加 0, 16 进制前加 0x
+#define SMALL       64  // 16进制使用小写字母
 
 /**
  * 余数除法
@@ -57,7 +66,7 @@ static int skip_atoi(const char **s) {
  * 
  * type & FLAG = True 说明 type 中含有这个 Flag，反之不含有
  */
-char *number(char *str, int num, int base, int size, int precision, int type) {
+static char *number(char *str, int num, int base, int size, int precision, int type) {
     char padding, sign, tmp[36];
     const char * digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     int i;
@@ -174,7 +183,7 @@ char *number(char *str, int num, int base, int size, int precision, int type) {
     }
 
     /**
-     * 如果是对左对齐，前面的字符都输入完了，用空格填充最后的内容
+     * 左对齐，前面的字符都输入完了，用空格填充最后的内容
      */
     while (size > 0)
     {
@@ -192,5 +201,209 @@ char *number(char *str, int num, int base, int size, int precision, int type) {
  * @return  args    可变参数列表 
  */
 int vsprintf(char *buf, const char *fmt, va_list args) {
+    int len;
+    int i;
+    char * str;         // 跟踪缓冲区的当前位置
+    char * s;
+    int * ip;
+    int condition;      // do - while 循环中用到的判断变量
 
+    int flags;          // number 函数中用到的 flags
+
+    int field_width;    // 输出缓冲区宽度
+    int precision;      // 输出的数字的最小位数
+
+    int qualifier;      /* 整数字段格式说明符的修饰符。其中 h: short ; l: long; L: long long */
+
+    for (str = buf; *fmt; fmt++) {
+        if (*fmt != '%')        // 如果不是 % 号，那么一定没到格式化部分
+        {
+            *str++ = *fmt;
+            continue;
+        }
+
+        /**
+         * 如果第一个 if 分支没有拦截成功，那么说明遇到了 %
+         * 此时把 % 之后所有可能出现的格式化标志符都拦截一下，下一次循环就一定是普通字符了。
+         */
+
+        fmt++;          // 跳过 % 号，开始处理格式化标志符
+
+        /* 处理标志位 flags */
+        flags = 0;      // 初始化 flags
+        
+        do {
+            switch (*fmt) {
+                case '-':
+                    flags |= LEFT;
+                    fmt++;
+                    condition = 1;
+                    break;
+                case '+':
+                    flags |= PLUS;
+                    fmt++;
+                    condition = 1;
+                    break;
+                case ' ':
+                    flags |= SPACE;
+                    fmt++;
+                    condition = 1;
+                    break;
+                case '#':
+                    flags |= SPECIAL;
+                    fmt++;
+                    condition = 1;
+                    break;
+                case '0':
+                    flags |= ZEROPAD;
+                    fmt++;
+                    condition = 1;
+                    break;
+                default:
+                    condition = 0;
+                    break;
+            }
+        } while (condition);
+
+        /* 获取输出缓冲区宽度 */
+        field_width = -1;
+        if (is_digit(*fmt)) {
+            field_width = skip_atoi(&fmt);
+        } else if (*fmt == '*') {    // 从可变参数列表当前参数获取宽度
+            field_width = va_arg(args, int);
+            if (field_width < 0) {
+                field_width = - field_width;
+                flags |= LEFT;
+            }
+            fmt++;
+        }
+
+        /* 获取输出精度 */
+        precision = -1;
+        if (*fmt == '.') {
+            fmt++;
+            if (is_digit(*fmt)) {
+                precision = skip_atoi(&fmt);
+            } else if (*fmt == '*') {   // 从可变参数列表当前参数获取精度
+                precision = va_arg(args, int);
+                fmt++;
+            }
+            if (precision < 0) {
+                precision = 0;
+            }
+        }
+
+        /* 获取整数标志位修饰符 */
+        qualifier = -1;
+        if (*fmt == 'h' || *fmt == 'l' || *fmt == 'L') {
+            qualifier = *fmt;
+            fmt++;
+        }
+
+        /* 按照指定类型输出 */
+        switch (*fmt)
+        {
+            // case 'c':
+            //     if (!(flags & LEFT)) {  // 右对齐
+            //         while (--field_width > 0) {
+            //             *str++ = ' ';   // 左侧补空格
+            //         }   
+            //     }
+            //     *str++ = ()va_arg(args, int)
+                
+            //     break;
+            // case 's':
+            //     break;
+            // case 'o':
+            //     break;
+            // case 'p':
+            //     break;
+            // case 'x':
+            //     break;
+            // case 'X':
+            //     break;
+            // case 'd':
+            //     break;
+            // case 'i':
+            //     break;
+            // case 'u':
+            //     break;
+            // case 'n':
+            //     break;
+            // default:
+            //     break;
+            case 'c':
+                if (!(flags & LEFT))
+                    while (--field_width > 0)
+                        *str++ = ' ';
+                *str++ = (unsigned char) va_arg(args, int);
+                while (--field_width > 0)
+                    *str++ = ' ';
+                break;
+
+            case 's':
+                s = va_arg(args, char *);
+                len = kernel_strlen(s);
+                if (precision < 0)
+                    precision = len;
+                else if (len > precision)
+                    len = precision;
+
+                if (!(flags & LEFT))
+                    while (len < field_width--)
+                        *str++ = ' ';
+                for (i = 0; i < len; ++i)
+                    *str++ = *s++;
+                while (len < field_width--)
+                    *str++ = ' ';
+                break;
+
+            case 'o':
+                str = number(str, va_arg(args, unsigned long), 8,
+                field_width, precision, flags);
+                break;
+
+            case 'p':
+                if (field_width == -1) {
+                    field_width = 8;
+                    flags |= ZEROPAD;
+                }
+                str = number(str,
+                             (unsigned long) va_arg(args, void *), 16,
+                field_width, precision, flags);
+                break;
+
+            case 'x':
+                flags |= SMALL;
+            case 'X':
+                str = number(str, va_arg(args, unsigned long), 16,
+                field_width, precision, flags);
+                break;
+
+            case 'd':
+            case 'i':
+                flags |= SIGN;
+            case 'u':
+                str = number(str, va_arg(args, unsigned long), 10,
+                field_width, precision, flags);
+                break;
+
+            case 'n':
+                ip = va_arg(args, int *);
+                *ip = (str - buf);
+                break;
+
+            default:
+                if (*fmt != '%')
+                    *str++ = '%';
+                if (*fmt)
+                    *str++ = *fmt;
+                else
+                    --fmt;
+                break;
+        }
+    }
+
+    *str = '\0';        // 字符串结尾
+    return str - buf;   // 输出字符串长度
 }
