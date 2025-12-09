@@ -383,9 +383,11 @@ int vsprintf(char *buf, const char *fmt, va_list args) {
                  * %u -> 输出无符号整数流程: 
                  *      1.%u 被 tty_printf 接收
                  *      2.传入 vsprintf 被解析成 flags
-                 *      3.将要输入的数字转化为符合 number 在该 flags 下合理的类型
-                 *      4.然后通过 number 函数按照 flags 指定的格式输出
+                 *      3.将要输入数字的类型转化为 number 函数在当前 flags 下所要求的输入数字类型
+                 *      4.通过 number 函数将输入的数字转化为 flags 所指定格式的字符串
                  * 
+                 * 问题，格式化输出中 %u 的输出格式是通过什么实现的？
+                 *      是上述一整个流程的作用，而不是某个孤立的环节。
                  */
                 str = number(str, va_arg(args, unsigned long), 10, field_width, precision, flags);
                 break;
