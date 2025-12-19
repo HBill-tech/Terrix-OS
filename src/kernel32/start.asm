@@ -18,3 +18,9 @@ _start:
     push eax
     call hlos_init
     jmp $
+
+section .text
+global interrupt_handler_default
+interrupt_handler_default:
+    nop
+    iret

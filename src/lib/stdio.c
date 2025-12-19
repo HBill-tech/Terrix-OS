@@ -64,7 +64,7 @@ static int skip_atoi(const char **s) {
  * 
  * @return  str       写入该数字之后，指针在缓冲区中指向的位置，方便调用者接着写
  * 
- * type & FLAG = True 说明 type 中含有这个 Fl ag，反之不含有
+ * type & FLAG = True 说明 type 中含有这个 Flag，反之不含有
  */
 static char *number(char *str, int num, int base, int size, int precision, int type) {
     char padding, sign, tmp[36];
@@ -308,9 +308,14 @@ int vsprintf(char *buf, const char *fmt, va_list args) {
         switch (*fmt)
         {
             /**
-             * 接下来的几种数字处理类型中，都会将从参数列表中拿到的数字做类型强制转化然后传递给 number 函数.
-             * 如果 tty_printf 中该格式化标志符对应的参数类型强转之后值不变，那么这样的输入对于该标志符是合法的，
-             * 否则是不合法的，或者我们可以理解为该标符服兼容某些不同的类型，如 %d 兼容 unsigned int.
+             * %[type_flag] -> 输出无符号整数流程: 
+             *      1.%[type_flag] 被 tty_printf 接收
+             *      2.传入 vsprintf 被解析成 flags
+             *      3.将要打印数字的类型转化为 number 函数在当前 flags 下所要求的输入数字类型，否则会发生错误
+             *      4.通过 number 函数将输入的数字转化为 flags 所指定格式的字符串
+             * 
+             * 问题，格式化输出中 %[type_flag] 的输出格式是通过什么实现的？
+             *      是上述一整个流程的作用，而不是某个孤立的环节。
              */
             case 'c':
                 if (!(flags & LEFT)) {  // 右对齐
@@ -368,28 +373,14 @@ int vsprintf(char *buf, const char *fmt, va_list args) {
             case 'x':
                 flags |= SPECIAL;
                 flags |= SMALL;
-                str = number(str, va_arg(args, unsigned long), 16, field_width, precision, flags);
+                str = number(str, va_arg(args, unsigned int), 16, field_width, precision, flags);
                 break;
             case 'X':
                 flags |= SPECIAL;
-                str = number(str, va_arg(args, unsigned long), 16, field_width, precision, flags);
+                str = number(str, va_arg(args, unsigned int), 16, field_width, precision, flags);
                 break;
             case 'u':
-                /**
-                 * 这里没有设置 SIGN，说明 number 按照无符号数字的方法将该数字转化为字符串.
-                 * 因此 number 输入的数字需要是无符号数, 如果是负数将产生错误.
-                 * 于是我们让 %u 在可变参数列表中对应的数在这被强制转化为无符号数，然后输出.
-                 * 
-                 * %u -> 输出无符号整数流程: 
-                 *      1.%u 被 tty_printf 接收
-                 *      2.传入 vsprintf 被解析成 flags
-                 *      3.将要输入数字的类型转化为 number 函数在当前 flags 下所要求的输入数字类型
-                 *      4.通过 number 函数将输入的数字转化为 flags 所指定格式的字符串
-                 * 
-                 * 问题，格式化输出中 %u 的输出格式是通过什么实现的？
-                 *      是上述一整个流程的作用，而不是某个孤立的环节。
-                 */
-                str = number(str, va_arg(args, unsigned long), 10, field_width, precision, flags);
+                str = number(str, va_arg(args, unsigned int), 10, field_width, precision, flags);
                 break;
             case 'n':
                 ip = va_arg(args, int*);

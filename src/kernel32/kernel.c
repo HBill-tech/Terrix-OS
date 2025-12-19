@@ -1,6 +1,7 @@
 #include <kernel.h>
 #include <tty.h>
 #include <stdio.h>
+#include <interrupt.h>
 
 void test(int a, ...) {
     va_list args;
@@ -16,8 +17,13 @@ void test(int a, ...) {
 
 void hlos_init(memory_info_t* mem_info, uint32_t gdt_info)
 {
+    interrupt_init();
     tty_init();
-    int a = 335;
+
+
+    int a = 3 / 0;      // 测试中断
+
     tty_printf("hello, world!\n");
     tty_printf("I LOVE U GSY! %d", 1314520);
+    while (TRUE);
 }

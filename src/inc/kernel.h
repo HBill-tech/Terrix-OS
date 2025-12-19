@@ -176,7 +176,11 @@ static inline void sti() {
     __asm__ volatile("sti");
 }
 
-// 将GDT的基地址和界限加载到GDTR中
+/**
+ * 将 GDT 的基地址和界限加载到 GDTR 中
+ * @param start GDT的首地址
+ * @param size  GDT的界限(元素个数)
+ */
 static inline void lgdt(uint32_t start, uint16_t size) {
     struct 
     {
@@ -194,6 +198,32 @@ static inline void lgdt(uint32_t start, uint16_t size) {
         :[g]"m"(gdt)
     );
 }
+
+/**
+ * 将 IDT 的首地址和界限加载到 IDTR 中
+ * @param start 中断描述符表的首地址
+ * @param size  中断描述符表的元素个数(界限)
+ */
+static inline void lidt(uint32_t start, uint32_t size) {
+    struct {
+        uint16_t limit;
+        uint16_t start_l;
+        uint16_t start_h;
+    } idt;
+
+    idt.start_h = start >> 16;
+    idt.start_l = start & 0xFFFF;
+    idt.limit = size -1;
+    /**
+     * 约束 m : 表示把变量 idt 作为内存地址使用
+     */
+    __asm__ volatile(
+        "lidt %[i]"
+        :
+        :[i]"m"(idt)
+    );
+}
+
 
 // 读取 CR0 寄存器
 static inline uint32_t read_cr0() {
