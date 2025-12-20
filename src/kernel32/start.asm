@@ -20,7 +20,35 @@ _start:
     jmp $
 
 section .text
-global interrupt_handler_default
-interrupt_handler_default:
-    nop
+%macro INTERRUPT_HANDLER 3
+global interrupt_handler_%1
+extern handler_%1
+
+interrupt_handler_%1:
+    ; %if %3 == 0
+    ;     push dword 0    ; 如果第三个参数等于0，压入一个 0 作为错误码占位符
+    ; %endif
+    ; push dword %2       ; 压入中断向量号
+    pusha
+    push ds
+    push es
+    push fs
+    push gs
+
+    push esp
+    call handler_%1
+    add esp, 4          ; 跳过 push esp 压入栈的数据，指向 gs
+
+    pop gs
+    pop fs
+    pop es
+    pop ds
+    popa
+    ; add esp, 8        ; 跳过 错误码 和 中断向量，使得 esp 指向 eip
     iret
+%endmacro
+
+; 使用宏生成各个中断处理的函数
+INTERRUPT_HANDLER default,          -1,     0
+INTERRUPT_HANDLER division,         0,      0
+INTERRUPT_HANDLER debug             1,      0

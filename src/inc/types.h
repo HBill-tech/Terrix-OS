@@ -21,6 +21,6 @@ typedef uint32_t Elf32_Word;
 
 
 #define _packed __attribute__((packed))
-#define HLT _asm__ __volatile__("hlt;")
+#define HLT __asm__ __volatile__("hlt;")     // CPU 进入到低功耗状态
 
 #endif

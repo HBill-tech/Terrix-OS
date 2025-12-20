@@ -17,12 +17,9 @@ void test(int a, ...) {
 
 void hlos_init(memory_info_t* mem_info, uint32_t gdt_info)
 {
+    tty_init();
     interrupt_init();
     
     int a = 3 / 0;      // 测试中断
-
-    tty_init();
-    tty_printf("hello, world!\n");
-    tty_printf("I LOVE U GSY! %d", 1314520);
     while (TRUE);
 }

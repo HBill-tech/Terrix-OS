@@ -3,8 +3,33 @@
 
 #include <types.h>
 
+
+/**
+ * 调用中断处理函数时需要传递的参数帧
+ */
+typedef struct interrupt_frame_t
+{
+    // 手动压入
+    uint32_t gs, fs, es, ds;
+    uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax;
+    // 自动压入
+    uint32_t eip, cs, eflags;
+}interrupt_frame_t;
+
+
 // 默认的中断处理函数
 extern void interrupt_handler_default();
+void handler_default();
+
+// 除 0 异常
+#define IRQ0_DE             0
+extern void interrupt_handler_division();
+void handler_division(interrupt_frame_t frame);
+
+// 调试 Debug
+#define IRQ1_DB             1
+extern void interrupt_handler_debug();
+void handler_debug(interrupt_frame_t frame);
 
 #define INTERRUPT_GATE_SIZE     0x100           // 中断描述符表的长度
 
