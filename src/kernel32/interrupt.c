@@ -35,6 +35,150 @@ void handler_debug(interrupt_frame_t frame) {
 }
 
 /**
+ * 不可屏蔽中断
+ * @param frame 传入的参数帧
+ */
+void handler_nmi(interrupt_frame_t frame) {
+    tty_printf("nmi handler\n");
+}
+
+/**
+ * 断点异常
+ * @param frame 传入的参数帧
+ */
+void handler_breakpoint(interrupt_frame_t frame) {
+    tty_printf("breakpoint handler");
+}
+
+/**
+ * 算数指令的溢出异常
+ * @param frame 传入的参数帧
+ */
+void handler_overflow(interrupt_frame_t frame) {
+    tty_printf("overflow handler");
+}
+
+/**
+ * 数组越界异常
+ * @param frame 传入的参数帧
+ */
+void handler_boundrange(interrupt_frame_t frame) {
+    tty_printf("oound range handler");
+}
+
+/**
+ * 执行非法指令异常
+ * @param frame 传入的参数帧
+ */
+void handler_opcode(interrupt_frame_t frame) {
+    tty_printf("opcode handler");
+}
+
+/**
+ * 性能优化中断
+ * @param frame 传入的参数帧
+ */
+void handler_device(interrupt_frame_t frame) {
+    tty_printf("device handler");
+}
+
+/**
+ * 双重故障异常
+ * @param frame 传入的参数帧
+ */
+void handler_double(interrupt_frame_t frame) {
+    tty_printf("double fault handler");
+}
+
+/**
+ * 无效 TSS 异常
+ * @param frame 传入的参数帧
+ */
+void handler_tss(interrupt_frame_t frame) {
+    tty_printf("tss handler");
+}
+
+/**
+ * 缺段异常
+ * @param frame 传入的参数帧
+ */
+void handler_segment(interrupt_frame_t frame) {
+    tty_printf("segment handler");
+}
+
+/**
+ * 栈段异常
+ * @param frame 传入的参数帧
+ */
+void handler_stack(interrupt_frame_t frame) {
+    tty_printf("stack handler");
+}
+
+/**
+ * 常规保护异常
+ * @param frame 传入的参数帧
+ */
+void handler_protection(interrupt_frame_t frame) {
+    tty_printf("protection handler");
+}
+
+/**
+ * 缺页异常
+ * @param frame 传入的参数帧
+ */
+void handler_page(interrupt_frame_t frame) {
+    tty_printf("page handler");
+}
+
+/**
+ * 浮点异常
+ * @param frame 传入的参数帧
+ */
+void handler_fpu(interrupt_frame_t frame) {
+    tty_printf("fpu handler");
+}
+
+/**
+ * 对齐检查异常
+ * @param frame 传入的参数帧
+ */
+void handler_align(interrupt_frame_t frame) {
+    tty_printf("align handler");
+}
+
+/**
+ * 机器检查异常
+ * @param frame 传入的参数帧
+ */
+void handler_machine(interrupt_frame_t frame) {
+    tty_printf("machine handler");
+}
+
+/**
+ * SIMD 浮点异常
+ * @param frame 传入的参数帧
+ */
+void handler_simd(interrupt_frame_t frame) {
+    tty_printf("simd handler");
+}
+
+/**
+ * 虚拟化异常
+ * @param frame 传入的参数帧
+ */
+void handler_virtual(interrupt_frame_t frame) {
+    tty_printf("virtual handler");
+}
+
+/**
+ * 控制保护异常
+ * @param frame 传入的参数帧
+ */
+void handler_control(interrupt_frame_t frame) {
+    tty_printf("control handler");
+}
+
+/**
  * 设置中断门
  * @param vector    中断号
  * @param offset    中断处理函数的地址，由于系统是32位，所以这里地址也是32位
@@ -63,6 +207,24 @@ void interrupt_init() {
 
     set_interrupt_handler(IRQ0_DE, (uint32_t)interrupt_handler_division);
     set_interrupt_handler(IRQ1_DB, (uint32_t)interrupt_handler_debug);
-    
+    set_interrupt_handler(IRQ2_NMI, (uint32_t)interrupt_handler_nmi);
+    set_interrupt_handler(IRQ3_BP, (uint32_t)interrupt_handler_breakpoint);
+    set_interrupt_handler(IRQ4_OF, (uint32_t)interrupt_handler_overflow);
+    set_interrupt_handler(IRQ5_BR, (uint32_t)interrupt_handler_breakpoint);
+    set_interrupt_handler(IRQ6_UD, (uint32_t)interrupt_handler_opcode);
+    set_interrupt_handler(IRQ7_NM, (uint32_t)interrupt_handler_device);
+    set_interrupt_handler(IRQ8_DF, (uint32_t)interrupt_handler_double);
+    set_interrupt_handler(IRQA_TS, (uint32_t)interrupt_handler_tss);
+    set_interrupt_handler(IRQB_NP, (uint32_t)interrupt_handler_segment);
+    set_interrupt_handler(IRQC_SS, (uint32_t)interrupt_handler_stack);
+    set_interrupt_handler(IRQD_GP, (uint32_t)interrupt_handler_protection);
+    set_interrupt_handler(IRQE_PF, (uint32_t)interrupt_handler_page);
+    set_interrupt_handler(IRQ10_MF, (uint32_t)interrupt_handler_fpu);
+    set_interrupt_handler(IRQ11_AC, (uint32_t)interrupt_handler_align);
+    set_interrupt_handler(IRQ12_MC, (uint32_t)interrupt_handler_machine);
+    set_interrupt_handler(IRQ13_XM, (uint32_t)interrupt_handler_simd);
+    set_interrupt_handler(IRQ14_VE, (uint32_t)interrupt_handler_virtual);
+    set_interrupt_handler(IRQ15_CP, (uint32_t)interrupt_handler_control);
+
     lidt((uint32_t)int_table, INTERRUPT_GATE_SIZE);
 }

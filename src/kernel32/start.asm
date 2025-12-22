@@ -51,4 +51,22 @@ interrupt_handler_%1:
 ; 使用宏生成各个中断处理的函数
 INTERRUPT_HANDLER default,          -1,     0
 INTERRUPT_HANDLER division,         0,      0
-INTERRUPT_HANDLER debug             1,      0
+INTERRUPT_HANDLER debug,            1,      0
+INTERRUPT_HANDLER nmi,              2,      0
+INTERRUPT_HANDLER breakpoint,       3,      0
+INTERRUPT_HANDLER overflow,         4,      0
+INTERRUPT_HANDLER boundrange,       5,      0
+INTERRUPT_HANDLER opcode,           6,      0
+INTERRUPT_HANDLER device,           7,      0
+INTERRUPT_HANDLER double,           8,      1
+INTERRUPT_HANDLER tss,              10,     1
+INTERRUPT_HANDLER segment,          11,     1
+INTERRUPT_HANDLER stack,            12,     1
+INTERRUPT_HANDLER protection,       13,     1
+INTERRUPT_HANDLER page,             14,     1
+INTERRUPT_HANDLER fpu,              16,     0
+INTERRUPT_HANDLER align,            17,     1
+INTERRUPT_HANDLER machine,          18,     0
+INTERRUPT_HANDLER simd,             19,     0
+INTERRUPT_HANDLER virtual,          20,     0
+INTERRUPT_HANDLER control,          21,     1
