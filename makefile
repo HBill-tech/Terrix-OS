@@ -87,8 +87,8 @@ qemu: clean master
 
 
 .PHONY: qemu-linux
-qemu-linux: master
-	qemu-system-x86_64 -m 32M -drive file=master.img,index=0,media=disk,format=raw
+qemu-linux: clean master
+	qemu-system-i386 -m 32M -drive file=master.img,index=0,media=disk,format=raw
 
 .PHONY: test_chs
 test_chs: $(BUILD)/test/read_disk_chs.bin
