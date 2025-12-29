@@ -219,9 +219,8 @@ void tty_clear() {
 /**
  * 把给定缓冲区 buffer 中指定长度 count 的字符串输出到屏幕中当前光标指向的位置，如果屏幕显示不下则会滚屏显示。
  * 
- * 根据 tty_write_char 的性质1, 2. 再利用数学归纳法可以得出: 
- *      1.该函数保持 I
- *      2.若该函数行为正确
+ * 根据 tty_write_char 的性质1、2，再结合数学归纳法可以得出: 
+ *      1.该函数保持不变量 I
  * 
  * @param   buf     给定的缓冲区
  * @param   count   缓冲区长度
@@ -248,9 +247,6 @@ uint32_t tty_write(char *buf, uint32_t count) {
  *      cursor , screen 属于 [MEM_BASE, MEM_END]
  *      x, y 属于 [0, 24], [0, 79]
  * 该函数保持不变量 I(screen, cursor, x, y)
- * 
- * 性质2:
- * 当调用该函数时，如果满足 I(screen, cursor, x, y) ，那么函数行为正确
  * 
  * @param c 输出的字符内容
  */
