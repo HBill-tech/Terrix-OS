@@ -54,14 +54,18 @@ CygWin下载目录 https://cygwin.com/
 ![alt text](./docpic/image5.png)
 * 假设运行setup程序时选择的目录是`D:\nasm`，那么在下载完成之后要将`D:\nasm`添加到环境变量中.
 
-## Ubuntu运行环境配置
+## 启动命令
 
-## Windows上的运行命令
-
-#### 在QEMU上启动
+### 在QEMU上启动
 
 ```makefile
 make qemu
+```
+
+### 在QEMU上启动且使用GDB调试
+
+```makefile
+make qemu-debug
 ```
 
 ### 在bochs上启动
@@ -73,3 +77,5 @@ make bochs
 ## 问题解答文档入口
 
 [gdb连接不上QEMU虚拟机](./doc/doc1.md)
+
+[理解__asm__(.code16gcc);](./doc/doc2.md)
