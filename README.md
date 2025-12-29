@@ -70,14 +70,6 @@ make qemu
 make bochs
 ```
 
-## Linux上的运行命令
-
-### 在QEMU上启动
-
-```makefile
-make qemu-linux
-```
-
 ## 问题解答文档入口
 
 [gdb连接不上QEMU虚拟机](./doc/doc1.md)

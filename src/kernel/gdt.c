@@ -40,6 +40,6 @@ void init_gdt() {
     set_gdt_table_entry(KERNEL_CODE_SEG, 0, 0xFFFFFFFF, 
         SEG_ATTR_P | SEG_ATTR_DPL0 | SEG_NORMAL | SEG_TYPE_CODE  | SEG_TYPE_RW | SEG_ATTR_D | SEG_ATTR_G);
     // 初始化 lgdt 寄存器
-    lgdt((uint32_t)gdt_table, (uint32_t)sizeof(gdt_table));
+    lgdt((uint32_t)gdt_table, (uint16_t)sizeof(gdt_table));
     show_string("GDT init success!\r\n");
 }

@@ -4,6 +4,9 @@ SRC = ./src
 TEST = ./test
 INFO = ./info
 INC = $(SRC)/inc
+GCC = x86_64-elf-gcc
+LD = x86_64-elf-ld
+OBJCOPY = x86_64-elf-objcopy
 CFLAGS = -gdwarf-2 -O0 -c -m32 -I$(INC) -fno-pie -fno-stack-protector -nostdlib -nostdinc -Wno-int-to-pointer-cast -Wno-implicit-function-declaration
 
 
@@ -54,6 +57,7 @@ $(BUILD)/kernel32.elf: $(BUILD)/kernel32/start.o \
 	$(BUILD)/lib/string.o			\
 	$(BUILD)/lib/stdio.o			\
 	$(BUILD)/kernel32/interrupt.o 	\
+	$(BUILD)/kernel32/pic.o			\
 	$(shell mkdir -p $(dir $@))
 	x86_64-elf-ld -m elf_i386 -T $(SRC)/kernel32.lds $^ -o $@
 
@@ -70,25 +74,20 @@ master: $(BUILD)/boot.bin \
 bochs: clean master
 	bochsdbg -q -f bochsrc.bxrc
 
-.PHONY: clean-linux
-clean-linux:
-	@rm -rf $(BUILD)/*
-
 .PHONY: clean
 clean:
 	@rm -rf $(BUILD)/*
 	@rm -rf $(INFO)/*
 
-.PHONY: qemu
+.PHONY: qemu-debug
 # 这里的 qemu 启动命令逗号后面不要加空格
 # 32M 内存的 qemu 虚拟机
-qemu: clean master
+qemu-debug: clean master
 	qemu-system-i386w -s -S -m 32M -drive file=master.img,index=0,media=disk,format=raw
 
-
-.PHONY: qemu-linux
-qemu-linux: clean master
-	qemu-system-i386 -m 32M -drive file=master.img,index=0,media=disk,format=raw
+.PHONY: qemu
+qemu: clean master
+	qemu-system-i386w -m 32M -drive file=master.img,index=0,media=disk,format=raw
 
 .PHONY: test_chs
 test_chs: $(BUILD)/test/read_disk_chs.bin

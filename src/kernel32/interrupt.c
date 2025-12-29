@@ -2,6 +2,7 @@
 #include <kernel.h>
 #include <os.h>
 #include <tty.h>
+#include <pic.h>
 
 // 中断描述符表 IDT
 gate_t int_table[INTERRUPT_GATE_SIZE];
@@ -226,5 +227,9 @@ void interrupt_init() {
     set_interrupt_handler(IRQ14_VE, (uint32_t)interrupt_handler_virtual);
     set_interrupt_handler(IRQ15_CP, (uint32_t)interrupt_handler_control);
 
-    lidt((uint32_t)int_table, INTERRUPT_GATE_SIZE);
+    tty_printf("INTERRUPT GATE SIZE %d", INTERRUPT_GATE_SIZE);
+    tty_printf("SIZEOF %d", sizeof(int_table));
+    lidt((uint32_t)int_table, (uint16_t)sizeof(int_table));
+
+    pic_init();
 }

@@ -179,7 +179,7 @@ static inline void sti() {
 /**
  * 将 GDT 的基地址和界限加载到 GDTR 中
  * @param start GDT的首地址
- * @param size  GDT的界限(元素个数)
+ * @param size  GDT的界限（最后一个有效字节的偏移量）
  */
 static inline void lgdt(uint32_t start, uint16_t size) {
     struct 
@@ -202,9 +202,9 @@ static inline void lgdt(uint32_t start, uint16_t size) {
 /**
  * 将 IDT 的首地址和界限加载到 IDTR 中
  * @param start 中断描述符表的首地址
- * @param size  中断描述符表的元素个数(界限)
+ * @param size  中断描述符表最后一个有效字节的偏移量（界限）
  */
-static inline void lidt(uint32_t start, uint32_t size) {
+static inline void lidt(uint32_t start, uint16_t size) {
     struct {
         uint16_t limit;
         uint16_t start_l;
