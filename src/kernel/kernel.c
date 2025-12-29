@@ -17,5 +17,6 @@ void kernel_init() {
     // 远跳转刷新 CS 为 KERNEL_CODE_SEG, EIP加载protect_mode的32位地址
     // CPU 正式进入保护模式
     // 这里的 protect_mode 编码为什么是32位而不是16位呢?
+    // 因为 protect_mode 在 kernel32/start.asm 中实现，被编译成 32 位的代码
     far_jump(KERNEL_CODE_SEG, (uint32_t)protect_mode);
 }
