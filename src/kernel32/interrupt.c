@@ -3,6 +3,7 @@
 #include <os.h>
 #include <tty.h>
 #include <pic.h>
+#include <timer.h>
 
 // 中断描述符表 IDT
 gate_t int_table[INTERRUPT_GATE_SIZE];
@@ -231,5 +232,6 @@ void interrupt_init() {
     tty_printf("SIZEOF %d", sizeof(int_table));
     lidt((uint32_t)int_table, (uint16_t)sizeof(int_table));
 
-    pic_init();
+    pic_init();     // 初始化外中断芯片 8259A
+    timer_init();   // 初始化 8253 芯片（时钟）
 }

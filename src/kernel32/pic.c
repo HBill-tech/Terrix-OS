@@ -2,6 +2,11 @@
 #include <pic.h>
 
 /**
+ * 8259A 是用来触发外中断的。
+ * 外部设备将中断请求发送给 8259A 芯片，之后 8259A 将触发该中断请求对应的中断
+ */
+
+/**
  * pic 初始化函数
  * 初始化一块板子要依次设置 ICW1 ~ ICW4
  */
@@ -14,10 +19,10 @@ void pic_init() {
     ICW4 = PIC_ICW4_8086;
 
     // 初始化 PIC0
-    outb(PIC0_CMD, ICW1);  // 设置 ICW1
-    outb(PIC0_DATA, ICW2);                    // 设置 ICW2 : 设置中断向量号偏移   从此调用者只需要触发系统中断向量号即可触发PIC中断
-    outb(PIC0_DATA, ICW3);                            // 设置 ICW3 : 主片的IRQ2连接了从片（所以位2=1）
-    outb(PIC0_DATA, ICW4);                     // 设置 ICW4 : 8086/88 模式
+    outb(PIC0_CMD, ICW1);           // 设置 ICW1
+    outb(PIC0_DATA, ICW2);          // 设置 ICW2 : 设置中断向量号偏移   从此调用者只需要触发系统中断向量号即可触发PIC中断
+    outb(PIC0_DATA, ICW3);          // 设置 ICW3 : 主片的IRQ2连接了从片（所以位2=1）
+    outb(PIC0_DATA, ICW4);          // 设置 ICW4 : 8086/88 模式
 
 
     ICW2 = IRQ_PIC1_START;

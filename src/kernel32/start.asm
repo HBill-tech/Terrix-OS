@@ -29,6 +29,7 @@ interrupt_handler_%1:
     ;     push dword 0    ; 如果第三个参数等于0，压入一个 0 作为错误码占位符
     ; %endif
     ; push dword %2       ; 压入中断向量号
+    ; 这一段有没有意义有待商榷，目前删掉没出问题
     pusha
     push ds
     push es
@@ -48,7 +49,7 @@ interrupt_handler_%1:
     iret
 %endmacro
 
-; 使用宏生成各个中断处理的函数
+; 使用宏生成各个中断处理的函数          后两个参数的用途有待商榷
 INTERRUPT_HANDLER default,          -1,     0
 INTERRUPT_HANDLER division,         0,      0
 INTERRUPT_HANDLER debug,            1,      0
@@ -70,3 +71,4 @@ INTERRUPT_HANDLER machine,          18,     0
 INTERRUPT_HANDLER simd,             19,     0
 INTERRUPT_HANDLER virtual,          20,     0
 INTERRUPT_HANDLER control,          21,     1
+INTERRUPT_HANDLER timer,            0x20,   0
