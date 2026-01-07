@@ -33,13 +33,19 @@ CygWin下载目录 https://cygwin.com/
 
 **2.x86_64_elf_tools_windows**
 
-下载网址 https://github.com/blessingwater/GCC_x86_64-elf-tools-windows?tab=readme-ov-file
+[下载网址1](https://github.com/blessingwater/GCC_x86_64-elf-tools-windows?tab=readme-ov-file)
 
 进入网址之后点击右侧的 release 版本下载
 
 ![alt text](./docpic/image6.png)
 
-下载好.zip安装包之后解压，将x86_64_elf_tools_windows/bin配置到环境变量中
+[下载网址2(github自用仓库)](https://github.com/HBill-tech/x86_64_elf_tools_windows_selfuse.git)
+
+直接下载压缩包解压即可
+
+![alt text](docpic/image8.png)
+
+下载好 `.zip/7z` 压缩包之后解压，将x86_64_elf_tools_windows/bin配置到环境变量中
 
 **3.dd**
 * 下载链接: http://www.chrysocome.net/dd
@@ -58,6 +64,65 @@ CygWin下载目录 https://cygwin.com/
 
 ## Ubuntu Linux 运行环境配置
 
+**1.nasm**
+```bash
+sudo apt install nasm
+```
+
+**2.make**
+```bash
+sudo apt install make
+```
+
+**3.dd**
+```bash
+sudo apt install bash
+```
+
+**4.x86_64_elf_tools**
+
+[下载链接1](http://osdev.foofun.cn/index.php?title=GCC_Cross-Compiler#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91%E5%99%A8)
+
+进入链接后一直往下翻，快到底的时候能够看到下图的下载链接，点击下载即可。
+![alt text](docpic/image7.png)
+
+[下载链接2](https://github.com/HBill-tech/x86_64-elf-tools-linux.git)
+
+
+直接下载压缩包即可
+
+![alt text](docpic/image9.png)
+
+
+将下载得到的压缩包解压到特定目录，比如 `usrname/programEnv/`，之后配置环境变量。
+```bash
+gedit ~/.bashrc
+
+# bashrc 中写入以下命令
+export PATH="usrname/programEnv/x86_64-elf-7.5.0-Linux-x86_64/bin:$PATH"
+
+source ~/.bashrc
+```
+
+**5.bochs**
+```bash
+sudo apt install bochs
+```
+
+**6.qemu**
+```bash
+sudo apt install qemu-system-i386
+```
+
+**7.gdb**
+系统一般自带，通过以下命令查看 `gdb` 的路径
+```bash
+whereis gdb
+```
+如果没有，则通过以下命令下载
+```bash
+sudo apt install gdb
+```
 
 ## 启动命令
 
@@ -84,3 +149,5 @@ make bochs
 [gdb连接不上QEMU虚拟机](./doc/doc1.md)
 
 [理解__asm__(.code16gcc);](./doc/doc2.md)
+
+[关于跨平台开发磁盘镜像不兼容的Bug](./doc/doc3.md)

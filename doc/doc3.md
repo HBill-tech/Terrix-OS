@@ -1,4 +1,4 @@
-### 关于跨平台开发磁盘镜像不兼容的Bug
+## 关于跨平台开发磁盘镜像不兼容的Bug
 
 如果在 `Windows` 上开发好的系统想要在 `Ubuntu` 上运行，需要删掉 `Windows` 上创建的 `master.img`，在 `Ubuntu` 上使用 `bximage` 重新创建一个磁盘，磁盘信息如下。从 `ubuntu` 到 `Windows` 的迁移同理。
 ```bash
@@ -40,3 +40,5 @@ Creating hard disk image 'master.img' with CHS=65/16/63 (sector size = 512)
 The following line should appear in your bochsrc:
   ata0-master: type=disk, path="master.img", mode=flat
 ```
+
+[返回README](../README.md)
