@@ -2,7 +2,7 @@
 * 复现`bilibili`教程[点击此处跳转](https://www.bilibili.com/video/BV1Xdpze7E7b?spm_id_from=333.788.videopod.sections&vd_source=0297a102b9c9dd5de04074dc53d40c26).
 * 在windows环境下进行开发，对不熟悉linux的同志比较友好.
 
-## Windows运行环境配置
+## Windows 运行环境配置
 #### 虚拟机
 **1.qemu**
 * 该项目主要使用qemu，本项目使用的版本是`20250826`发布的.
@@ -53,6 +53,11 @@ CygWin下载目录 https://cygwin.com/
 * 进入链接之后点击 下图的链接
 ![alt text](./docpic/image5.png)
 * 假设运行setup程序时选择的目录是`D:\nasm`，那么在下载完成之后要将`D:\nasm`添加到环境变量中.
+
+
+
+## Ubuntu Linux 运行环境配置
+
 
 ## 启动命令
 

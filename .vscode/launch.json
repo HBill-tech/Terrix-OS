@@ -16,7 +16,7 @@
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
-            "miDebuggerPath": "D:/ProgramEnv/x86_64_elf_tools_windows/bin/x86_64-elf-gdb.exe",
+            "miDebuggerPath": "/usr/bin/gdb",
             "miDebuggerServerAddress": "127.0.0.1:1234",
             "setupCommands": [
                 {
@@ -36,11 +36,11 @@
                     "description": "加载内核文件",
                     "ignoreFailures": false
                 },
-                // {
-                //     "text": "add-symbol-file ./build/kernel.elf 0x8000",
-                //     "description": "加载内核文件",
-                //     "ignoreFailures": false
-                // },
+                {
+                    "text": "add-symbol-file ./build/kernel.elf 0x7e00",
+                    "description": "加载内核文件",
+                    "ignoreFailures": false
+                },
                 {
                     "text": "add-symbol-file ./build/kernel32.elf 0x10000",
                     "description": "加载内核文件",

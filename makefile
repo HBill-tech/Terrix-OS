@@ -69,7 +69,7 @@ master: $(BUILD)/boot.bin \
 	$(BUILD)/kernel32.elf
 	dd if=$(BUILD)/boot.bin of=master.img bs=512 count=1 conv=notrunc
 	dd if=$(BUILD)/kernel.bin of=master.img bs=512 count=9 seek=1 conv=notrunc
-	dd if=$(BUILD)/kernel32.elf of=master.img bs=512 count=500 seek=10 conv=notrunc
+	dd if=$(BUILD)/kernel32.elf of=master.img bs=512 count=100 seek=10 conv=notrunc
 	${TOOL_PREFIX}readelf -a $(BUILD)/kernel32.elf > $(INFO)/kernel32.txt
 
 .PHONY: bochs
@@ -85,7 +85,7 @@ clean:
 # 这里的 qemu 启动命令逗号后面不要加空格
 # 32M 内存的 qemu 虚拟机
 qemu-debug: clean master
-	qemu-system-i386 -s -S -m 32M -serial null -serial stdio -drive file=master.img,index=0,media=disk,format=raw
+	qemu-system-i386 -s -S -m 32M -drive file=master.img,if=ide,index=0,media=disk,format=raw -serial null -serial stdio
 
 .PHONY: qemu
 qemu: clean master

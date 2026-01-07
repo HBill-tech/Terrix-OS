@@ -1,7 +1,7 @@
 #include <kernel.h>
 
 #define SECTOR_SIZE 512
-#define OS_ADDR     0x100000    // 操作系统内核放入内存的起始地址
+#define OS_ADDR     0x90000    // 操作系统内核放入内存的起始地址
 
 /**
  * 将硬盘的内容读取到内存中
@@ -35,6 +35,15 @@ void read_disk(uint32_t sector, uint32_t count, uint16_t* buffer) {
         // 位3(DRQ)必须为1 - 数据已准备好可以传输
         // 0x88 是掩码，只关注第 7 和 3 位
         while((inb(0x1F7) & 0x88) != 0x8);
+        // uint8_t status;
+        // do {
+        //     status = inb(0x1F7);
+        //     // if (status == 0xFF)
+        //     // {
+        //     //     show_string("Disk controller not found or port error\r\n");
+        //     // }
+            
+        // } while((status & 0x80) || !(status & 0x08));
         for (int i = 0; i < SECTOR_SIZE / 2; i++) {
             *ptr++ = inw(0x1F0);    // 从数据寄存器0x1F0每次读取2字节
         }
@@ -106,7 +115,7 @@ void kernel32_init()
     // 0号扇区: 引导扇区 MBR
     // 1~9: Kernel x16
     // 10~*: Kernel x86
-    read_disk(10, 500, (uint16_t*)OS_ADDR);
+    read_disk(10, 100, (uint16_t*)OS_ADDR);
     uint32_t addr = read_elf_header((uint8_t*)OS_ADDR);
     if (addr == 0)
     {
