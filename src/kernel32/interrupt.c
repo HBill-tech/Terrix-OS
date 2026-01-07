@@ -230,9 +230,6 @@ void interrupt_init() {
     set_interrupt_handler(IRQ14_VE, (uint32_t)interrupt_handler_virtual);
     set_interrupt_handler(IRQ15_CP, (uint32_t)interrupt_handler_control);
 
-    tty_printf("INTERRUPT GATE SIZE %d", INTERRUPT_GATE_SIZE);
-    tty_printf("SIZEOF %d", sizeof(int_table));
-
     /************************************** 配置外中断 ************************************/
     pic_init();     // 初始化外中断芯片 8259A
     timer_init();   // 初始化 8253 芯片（时钟中断）

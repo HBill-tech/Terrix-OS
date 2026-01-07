@@ -29,14 +29,14 @@ void pic_init() {
     // 初始化 PIC1
     outb(PIC1_CMD, ICW1);
     outb(PIC1_DATA, ICW2);
-    outb(PIC1_DATA, ICW3);                            // 连接到主片的引脚
+    outb(PIC1_DATA, ICW3);          // 连接到主片的引脚
     outb(PIC1_DATA, ICW4);
 
-    // 屏蔽中断
+    // 屏蔽芯片的引脚，被屏蔽的引脚接收不到中断请求
     IMR = 0xFF & ~(1 << 2);
-    outb(PIC0_DATA, IMR);                   // 必须允许IRQ2，否则从片的中断无法通过
+    outb(PIC0_DATA, IMR);           // 必须允许IRQ2，否则从片的中断无法通过
     IMR = 0xFF;
-    outb(PIC1_DATA, IMR);                   // 屏蔽从片的全部中断
+    outb(PIC1_DATA, IMR);           // 屏蔽从片的全部引脚
 }
 
 /**

@@ -4,11 +4,18 @@
 
 static uint32_t ticks = 0;
 
+/**
+ * 时钟中断处理函数
+ * @param frame 传入的参数帧
+ */
 void handler_timer(interrupt_frame_t frame) {
     ticks++;                // 时钟打点次数加一
     send_eoi(IRQ0_TIMER);   // 表示中断处理完毕
 }
 
+/**
+ * 时钟中断芯片 8253 初始化
+ */
 void timer_init() {
 
     // 时钟中断间隔内的脉冲数
