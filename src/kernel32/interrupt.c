@@ -202,11 +202,13 @@ void set_interrupt_handler(int vector, uint32_t handler) {
 
 void interrupt_init() {
     uint16_t default_attr = GATE_ATTR_P | GATE_ATTR_DPL0 | GATE_TYPE_INT;
+    // 初始化 int_table，表中的所有中断都设置为默认的 handler
     for (int i = 0; i < INTERRUPT_GATE_SIZE; i++)
     {
         set_interrupt_gate(i, (uint32_t)interrupt_handler_default, KERNEL_CODE_SEG, default_attr);
     }
 
+    /************************************ 配置内中断 *******************************************/
     set_interrupt_handler(IRQ0_DE, (uint32_t)interrupt_handler_division);
     set_interrupt_handler(IRQ1_DB, (uint32_t)interrupt_handler_debug);
     set_interrupt_handler(IRQ2_NMI, (uint32_t)interrupt_handler_nmi);
@@ -230,8 +232,10 @@ void interrupt_init() {
 
     tty_printf("INTERRUPT GATE SIZE %d", INTERRUPT_GATE_SIZE);
     tty_printf("SIZEOF %d", sizeof(int_table));
-    lidt((uint32_t)int_table, (uint16_t)sizeof(int_table));
 
+    /************************************** 配置外中断 ************************************/
     pic_init();     // 初始化外中断芯片 8259A
-    timer_init();   // 初始化 8253 芯片（时钟）
+    timer_init();   // 初始化 8253 芯片（时钟中断）
+
+    lidt((uint32_t)int_table, (uint16_t)sizeof(int_table));     // 把 int_table 正式加载到 IDT 中
 }
