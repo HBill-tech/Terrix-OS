@@ -3,7 +3,10 @@
 * 在windows环境下进行开发，对不熟悉linux的同志比较友好.
 
 ## Windows 运行环境配置
-#### 虚拟机
+
+* Windows 11
+
+### 虚拟机
 **1.qemu**
 * 该项目主要使用qemu，本项目使用的版本是`20250826`发布的.
 * 下载链接: https://qemu.weilnetz.de/w64/
@@ -17,7 +20,7 @@
 * 下载链接: https://sourceforge.net/projects/bochs/files/bochs/
 * 运行setup程序时需要选定下载目录，假设目录是`D:\bochs`，要把`D:\bochs`加入到环境变量中.
 
-#### 其他工具
+### 其他工具
 **1.CygWin**
 CygWin下载目录 https://cygwin.com/
 
@@ -64,22 +67,24 @@ CygWin下载目录 https://cygwin.com/
 
 ## Ubuntu Linux 运行环境配置
 
-**1.nasm**
+* Ubuntu 20.04
+
+### 1.nasm
 ```bash
 sudo apt install nasm
 ```
 
-**2.make**
+### 2.make
 ```bash
 sudo apt install make
 ```
 
-**3.dd**
+### 3.dd
 ```bash
 sudo apt install bash
 ```
 
-**4.x86_64_elf_tools**
+### 4.x86_64_elf_tools
 
 [下载链接1](http://osdev.foofun.cn/index.php?title=GCC_Cross-Compiler#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91%E5%99%A8)
 
@@ -104,17 +109,17 @@ export PATH="usrname/programEnv/x86_64-elf-7.5.0-Linux-x86_64/bin:$PATH"
 source ~/.bashrc
 ```
 
-**5.bochs**
+### 5.bochs
 ```bash
 sudo apt install bochs
 ```
 
-**6.qemu**
+### 6.qemu
 ```bash
 sudo apt install qemu-system-i386
 ```
 
-**7.gdb**
+### 7.gdb
 系统一般自带，通过以下命令查看 `gdb` 的路径
 ```bash
 whereis gdb
