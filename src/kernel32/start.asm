@@ -50,6 +50,8 @@ interrupt_handler_%1:
 %endmacro
 
 ; 使用宏生成各个中断处理的函数          后两个参数的用途有待商榷
+
+; 内中断
 INTERRUPT_HANDLER default,          -1,     0
 INTERRUPT_HANDLER division,         0,      0
 INTERRUPT_HANDLER debug,            1,      0
@@ -71,4 +73,7 @@ INTERRUPT_HANDLER machine,          18,     0
 INTERRUPT_HANDLER simd,             19,     0
 INTERRUPT_HANDLER virtual,          20,     0
 INTERRUPT_HANDLER control,          21,     1
+
+; PIC 外中断
 INTERRUPT_HANDLER timer,            0x20,   0
+INTERRUPT_HANDLER rtc,              0x28,   0

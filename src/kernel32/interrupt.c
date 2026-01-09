@@ -4,6 +4,7 @@
 #include <tty.h>
 #include <pic.h>
 #include <timer.h>
+#include <rtc.h>
 
 // 中断描述符表 IDT
 gate_t int_table[INTERRUPT_GATE_SIZE];
@@ -232,7 +233,8 @@ void interrupt_init() {
 
     /************************************** 配置外中断 ************************************/
     pic_init();     // 初始化外中断芯片 8259A
-    timer_init();   // 初始化 8253 芯片（时钟中断）
+    timer_init();   // 初始化 8253 芯片（定时器中断）
+    rtc_init();     // 初始化 CMOS (实时时钟中断)
 
     lidt((uint32_t)int_table, (uint16_t)sizeof(int_table));     // 把 int_table 正式加载到 IDT 中
 }

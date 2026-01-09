@@ -109,7 +109,7 @@ static char *number(char *str, int num, int base, int size, int precision, int t
     // 将数字转化为指定进制的字符串
     i = 0;  // i 用来索引 tmp，同时用来表示最终 tmp 中数字的位数
     if (num == 0) {
-        tmp[i++] = 0;
+        tmp[i++] = digits[0];   // '0'
     } else {
         while (num != 0) {
             // 除 n 取余法由 10 进制转 n 进制，此时 tmp 存储 n 进制数字的倒序

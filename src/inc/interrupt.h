@@ -21,6 +21,7 @@ typedef struct interrupt_frame_t
 extern void interrupt_handler_default();
 void handler_default(interrupt_frame_t frame);
 
+/******************************************* 内中断 *******************************************/
 // 除 0 异常
 #define IRQ0_DE             0
 extern void interrupt_handler_division();
@@ -129,9 +130,18 @@ void handler_control(interrupt_frame_t frame);
 
 
 /*********************************************** 外中断 **********************************************/
+// 定时器中断
 #define IRQ0_TIMER          0x20
 extern void interrupt_handler_timer();
 void handler_timer(interrupt_frame_t frame);
+
+// 实时时钟中断
+#define IRQ1_RTC            0x28
+extern void interrupt_handler_rtc();
+void handler_rtc(interrupt_frame_t frame);
+
+// 两个 pic 芯片的级联引脚
+#define IRQ0_CASCADE        0x22
 
 #define INTERRUPT_GATE_SIZE     0x100           // 中断描述符表的长度
 
