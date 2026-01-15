@@ -314,11 +314,11 @@ int vsprintf(char *buf, const char *fmt, va_list args) {
              *      3.将要打印数字的类型转化为 number 函数在当前 flags 下所要求的输入数字类型，否则有发生异常的风险.
              *      4.通过 number 函数将输入的数字转化为 flags 所指定格式的字符串.
              * 
-             * 可能发生的错误举例：
-             *      假设 flags 要求输出无符号数。
+             * [3.]可能发生的异常举例：
+             *      假设 flags 要求输出无符号数.
              *      如果不把要打印的数字转化为 unsigned int 类型，那么可能输入的数是一个负数，
-             *      这会导致 do_div() 时候得到一个负数。
-             *      从而无法在 digits 中找到对应的字符，导致数组越界
+             *      这会导致 do_div() 时候得到一个负数.
+             *      从而无法在 digits 中找到对应的字符，导致数组越界.
              */
             case 'c':
                 if (!(flags & LEFT)) {  // 右对齐
