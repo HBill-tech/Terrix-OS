@@ -56,7 +56,7 @@ static int skip_atoi(const char **s) {
 /**
  * 将整数转换为指定格式的字符串，tty_printf的核心逻辑在这里.
  * @param   str       输出缓冲区指针
- * @param   num       要转换的数字
+ * @param   num       要转换的数字，int 类型能够兼容多种数字类型，具体传入什么类型取决于 type.
  * @param   base      进制 [2, 36]
  * @param   size      缓冲区长度(宽度)
  * @param   precision 精度，输出数字的最小位数
@@ -231,10 +231,10 @@ int vsprintf(char *buf, const char *fmt, va_list args) {
          * 此时把 % 之后所有可能出现的格式化标志符都拦截一下，下一次循环就一定是普通字符了。
          */
 
-        fmt++;          // 跳过 % 号，开始处理格式化标志符
+        fmt++;                  // 跳过 % 号，开始处理格式化标志符
 
         /* 处理标志位 flags */
-        flags = 0;      // 初始化 flags
+        flags = 0;              // 初始化 flags
         
         do {
             switch (*fmt) {
@@ -309,13 +309,16 @@ int vsprintf(char *buf, const char *fmt, va_list args) {
         {
             /**
              * %[type_flag] -> 输出无符号整数流程: 
-             *      1.%[type_flag] 被 tty_printf 接收
-             *      2.传入 vsprintf 被解析成 flags
-             *      3.将要打印数字的类型转化为 number 函数在当前 flags 下所要求的输入数字类型，否则会发生错误
-             *      4.通过 number 函数将输入的数字转化为 flags 所指定格式的字符串
+             *      1.%[type_flag] 被 tty_printf 接收.
+             *      2.传入 vsprintf 被解析成 flags.
+             *      3.将要打印数字的类型转化为 number 函数在当前 flags 下所要求的输入数字类型，否则有发生异常的风险.
+             *      4.通过 number 函数将输入的数字转化为 flags 所指定格式的字符串.
              * 
-             * 问题，格式化输出中 %[type_flag] 的输出格式是通过什么实现的？
-             *      是上述一整个流程的作用，而不是某个孤立的环节。
+             * [3.]可能发生的异常举例：
+             *      假设 flags 要求输出无符号数.
+             *      如果不把要打印的数字转化为 unsigned int 类型，那么可能输入的数是一个负数，
+             *      这会导致 do_div() 时候得到一个负数.
+             *      从而无法在 digits 中找到对应的字符，导致数组越界.
              */
             case 'c':
                 if (!(flags & LEFT)) {  // 右对齐
