@@ -86,11 +86,15 @@ clean:
 # 这里的 qemu 启动命令逗号后面不要加空格
 # 32M 内存的 qemu 虚拟机
 qemu-debug: clean master
-	qemu-system-i386 -s -S -m 32M -drive file=master.img,if=ide,index=0,media=disk,format=raw -serial null -serial stdio
+	qemu-system-i386 -s -S -m 32M -drive file=master.img,if=ide,index=0,media=disk,format=raw \
+	-serial null -serial stdio	\
+	-soundhw pcspk
 
 .PHONY: qemu
 qemu: clean master
-	qemu-system-i386w -m 32M -drive file=master.img,index=0,media=disk,format=raw
+	qemu-system-i386 -m 32M -drive file=master.img,index=0,media=disk,format=raw \
+	-serial null -serial stdio	\
+	-soundhw pcspk
 
 .PHONY: test_chs
 test_chs: $(BUILD)/test/read_disk_chs.bin
