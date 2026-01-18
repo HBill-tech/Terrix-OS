@@ -156,3 +156,5 @@ make bochs
 [理解__asm__(.code16gcc);](./doc/doc2.md)
 
 [关于跨平台开发磁盘镜像不兼容的Bug](./doc/doc3.md)
+
+[时钟中断和实时时钟中断的区别](./doc/doc4.md)

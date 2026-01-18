@@ -1,6 +1,10 @@
 #ifndef HLOS_RTC_H
 #define HLOS_RTC_H
 
+/**
+ * 实时时钟中断
+ */
+
 #include <kernel.h>
 
 #define CMOS_ADDR   0x70    // CMOS 地质寄存器，用于选择要访问的CMOS寄存器
