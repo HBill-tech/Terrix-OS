@@ -19,17 +19,17 @@ static uint32_t beeping_threshold = 1000;    // 蜂鸣器的 "鸣叫" or "关闭
  */
 void handler_timer(interrupt_frame_t frame) {
     
-    if (beeping == 0) {
-        // beeping = 0，开始蜂鸣
-        start_beep();
-    } else if (beeping > beeping_threshold) {
-        // beeping 超过了阈值，停止蜂鸣
-        stop_beep();
-    }
+    // if (beeping == 0) {
+    //     // beeping = 0，开始蜂鸣
+    //     start_beep();
+    // } else if (beeping > beeping_threshold) {
+    //     // beeping 超过了阈值，停止蜂鸣
+    //     stop_beep();
+    // }
     
-    // 由于时钟中断每 10 ms 触发一次，因此每调用一次 handler_timer 后， beeping 要加 10 ms
-    // 如果 beeping 达到了 2 倍阈值，一个 蜂鸣 -> 停止 周期完成，重新开始蜂鸣.
-    beeping = beeping == beeping_threshold * 2 ? 0 : beeping + 10;
+    // // 由于时钟中断每 10 ms 触发一次，因此每调用一次 handler_timer 后， beeping 要加 10 ms
+    // // 如果 beeping 达到了 2 倍阈值，一个 蜂鸣 -> 停止 周期完成，重新开始蜂鸣.
+    // beeping = beeping == beeping_threshold * 2 ? 0 : beeping + 10;
 
     ticks++;                // 时钟打点次数加一
     send_eoi(IRQ0_TIMER);   // 表示中断处理完毕

@@ -1,8 +1,8 @@
-#include <string.h>
+#include <cstd/string.h>
 #include <kernel.h>
 #include <tty.h>
-#include <stdarg.h>
-#include <stdio.h>
+#include <cstd/stdarg.h>
+#include <cstd/stdio.h>
 
 /***************************************** 宏定义 **********************************************/
 

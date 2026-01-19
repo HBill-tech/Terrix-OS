@@ -1,8 +1,8 @@
-#include <stdio.h>
-#include <stdarg.h>
+#include <cstd/stdio.h>
+#include <cstd/stdarg.h>
 #include <kernel.h>
 #include <types.h>
-#include <string.h>
+#include <cstd/string.h>
 
 #define is_digit(c)     ((c) >= '0' && (c) <= '9')      // 判断一个 ASCII 码是否是数字
 

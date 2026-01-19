@@ -1,8 +1,8 @@
 #include <logf.h>
 #include <kernel.h>
-#include <stdarg.h>
-#include <string.h>
-#include <stdio.h>
+#include <cstd/stdarg.h>
+#include <cstd/string.h>
+#include <cstd/stdio.h>
 
 /**
  * 初始化串口 tty 功能

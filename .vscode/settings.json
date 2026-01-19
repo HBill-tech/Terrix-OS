@@ -9,7 +9,9 @@
         "stdio.h": "c",
         "interrupt.h": "c",
         "pic.h": "c",
-        "timer.h": "c"
+        "timer.h": "c",
+        "time.h": "c",
+        "stdlib.h" : "c"
     },
 
     "C_Cpp.errorSquiggles": "disabled"
