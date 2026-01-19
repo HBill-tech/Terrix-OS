@@ -27,5 +27,5 @@ uint8_t bcd_to_bin(uint8_t value) {
  * @param value 二进制格式的数据
  */
 uint8_t bin_to_bcd(uint8_t value) {
-    return (value / 10) << 4 + (value % 10);
+    return ((value / 10) << 4) + (value % 10);
 }

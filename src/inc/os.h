@@ -9,4 +9,6 @@
 #define KERNEL_VERSION      "1.0.0"     // 内核版本
 #define OP_SYS_VERSION      "1.0.0"     // 操作系统版本
 
+#define OS_TZ               (+8)          // 时区
+
 #endif

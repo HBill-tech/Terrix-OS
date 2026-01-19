@@ -71,7 +71,7 @@ void time_read_bcd(tm *time) {
  * @param time      记录时间的数据结构指针
  * @param timezone  时区
  */
-void time_read(tm *time, int timezone) {
+void time_read(tm *time, uint8_t timezone) {
     time_read_bcd(time);
     // 将时间数据从 bcd 格式转化为二进制格式，方便后续数据处理与打印
     time->tm_sec = bcd_to_bin(time->tm_sec);
@@ -95,7 +95,7 @@ time_t mk_time_stamp(tm *time) {
      * year  = time->tm_year     +       100         +       -70
      *        A.D.2000 based        A.D.1900 based      A.D.1970 based
      */
-    int year = time->tm_year + 30;
+    uint8_t year = time->tm_year + 30;
     // 这些年（从1970开始）经过的秒数
     res = SECONDS_PER_YEAR * year;
 
@@ -127,11 +127,11 @@ time_t mk_time_stamp(tm *time) {
 /**
  * 初始化系统时间
  */
-void time_init(int timezone) {
+void time_init(uint8_t timezone) {
     tm time;
     time_read(&time, timezone);
     
-    tty_printf("=======================STARTUP TIME: %d%02d-%02d-%02d %02d:%02d:%02d========================\n",
+    tty_printf("=======================STARTUP TIME: %u%02u-%02u-%02u %02u:%02u:%02u========================\n",
         time.century,
         time.tm_year,
         time.tm_mon,

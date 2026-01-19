@@ -233,7 +233,8 @@ int vsprintf(char *buf, const char *fmt, va_list args) {
 
         fmt++;                  // 跳过 % 号，开始处理格式化标志符
 
-        /* 处理标志位 flags */
+        /************************************ 解析 fmt ***********************************/
+        /* 将 fmt 中 % 后的格式符解析为标志位 flags */
         flags = 0;              // 初始化 flags
         
         do {
@@ -269,7 +270,7 @@ int vsprintf(char *buf, const char *fmt, va_list args) {
             }
         } while (condition);
 
-        /* 获取输出缓冲区宽度 */
+        /* 解析出缓冲区宽度 */
         field_width = -1;
         if (is_digit(*fmt)) {
             field_width = skip_atoi(&fmt);
@@ -282,7 +283,7 @@ int vsprintf(char *buf, const char *fmt, va_list args) {
             fmt++;
         }
 
-        /* 获取输出精度 */
+        /* 解析出输出精度 */
         precision = -1;
         if (*fmt == '.') {
             fmt++;
@@ -297,14 +298,14 @@ int vsprintf(char *buf, const char *fmt, va_list args) {
             }
         }
 
-        /* 获取整数标志位修饰符 */
+        /* 解析出整数标志位修饰符 */
         qualifier = -1;
         if (*fmt == 'h' || *fmt == 'l' || *fmt == 'L') {
             qualifier = *fmt;
             fmt++;
         }
 
-        /* 按照指定类型输出 */
+        /*********************************** 根据解析的结果输出 ********************************/
         switch (*fmt)
         {
             /**
