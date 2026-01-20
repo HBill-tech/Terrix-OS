@@ -12,7 +12,7 @@
 
 /**
  * BCD 码转化为二进制格式，计算公式如下:
- *      二进制值 = BCD 低 4 位数 + BCD 高 4 位数 * 10.
+ *      二进制值 = BCD 值的低 4 位数 + BCD 值的高 4 位数 * 10.
  * @param value BCD 格式的数据
  */
 uint8_t bcd_to_bin(uint8_t value) {
@@ -21,7 +21,7 @@ uint8_t bcd_to_bin(uint8_t value) {
 
 /**
  * 二进制格式转化为 BCD 码，计算公式如下:
- *      BCD 值 = (二进制十位数 << 4) + 二进制个位数.
+ *      BCD 值 = (二进制值在十进制下的十位数 << 4) + 二进制值在十进制下的个位数.
  * @param value 二进制格式的数据
  */
 uint8_t bin_to_bcd(uint8_t value) {
