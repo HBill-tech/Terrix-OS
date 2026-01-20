@@ -41,4 +41,4 @@ The following line should appear in your bochsrc:
   ata0-master: type=disk, path="master.img", mode=flat
 ```
 
-[返回README](../README.md)
+[返回目录](./content.md)

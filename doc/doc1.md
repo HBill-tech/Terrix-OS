@@ -23,4 +23,4 @@ whereis gdb
 把 `miDebuggerPath` 改为终端输出的路径即可。
 
 
-[返回README](../README.md)
+[返回目录](./content.md)
