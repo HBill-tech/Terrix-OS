@@ -147,7 +147,7 @@ Symbol table '.symtab' contains 149 entries:
     81: 00011353    25 FUNC    GLOBAL DEFAULT    1 handler_opcode
     82: 00011524   423 FUNC    GLOBAL DEFAULT    1 interrupt_init
     83: 00011308    25 FUNC    GLOBAL DEFAULT    1 handler_breakpoint
-    84: 00011131   223 FUNC    GLOBAL DEFAULT    1 tty_write_char
+    84: 0001112c   228 FUNC    GLOBAL DEFAULT    1 tty_write_char
     85: 00011434    25 FUNC    GLOBAL DEFAULT    1 handler_align
     86: 0001026c    62 FUNC    GLOBAL DEFAULT    1 hlos_init
     87: 00011091    14 FUNC    GLOBAL DEFAULT    1 tty_init
@@ -173,7 +173,7 @@ Symbol table '.symtab' contains 149 entries:
    107: 0001002c     0 NOTYPE  GLOBAL DEFAULT    1 interrupt_handler_divisio
    108: 00010000     0 NOTYPE  GLOBAL DEFAULT    1 _start
    109: 000119a9    35 FUNC    GLOBAL DEFAULT    1 stop_beep
-   110: 000110eb    70 FUNC    GLOBAL DEFAULT    1 tty_write
+   110: 000110eb    65 FUNC    GLOBAL DEFAULT    1 tty_write
    111: 00011321    25 FUNC    GLOBAL DEFAULT    1 handler_overflow
    112: 00010224     0 NOTYPE  GLOBAL DEFAULT    1 interrupt_handler_rtc
    113: 000112bd    25 FUNC    GLOBAL DEFAULT    1 handler_division

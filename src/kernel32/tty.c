@@ -55,7 +55,7 @@ static uint32_t cursor;
  * @param x, y  光标位置，使用字符编址
  * 既然这两个变量并不会直接参与到光标位置的设定中，那这里为什么要用到光标的字符编制坐标呢? 
  * 1. 我们可以利用这两个坐标进行更简单的条件判断
- * 2. x, y 参与到了特殊字符的操作中，如 CR 回车符，如果 x 更新不正确将导致 CR 操作不正确
+ * 2. x, y 参与到了特殊字符的操作中，如果 x, y 更新不正确将导致程序走到错误的条件分支，使操作不正确
  */
 static uint16_t x = 0, y = 0;
 // 字符样式
@@ -104,9 +104,9 @@ static void get_cursor() {
     // 计算当前光标的在内存的绝对地址
     cursor += MEM_BASE;
 
+    // 计算当前 cursor 相对于 screen 的字符偏移量
     get_screen();
 
-    // 计算当前 cursor 相对于 screen 的字符偏移量
     uint32_t relative_cursor = (cursor - screen) >> 1;
     x = relative_cursor % WIDTH;    // 计算出光标所在的列(0开始)
     y = relative_cursor / WIDTH;    // 计算出光标所在的行(0开始)
@@ -234,7 +234,6 @@ uint32_t tty_write(char *buf, uint32_t count) {
         c = *buf++;
         tty_write_char(c);      // cursor 范围在[screen, screen + SCR_SIZE + 2]
     }
-    set_cursor();
     return written;
 }
 
@@ -276,9 +275,9 @@ void tty_write_char(char c) {
 
             // 当 x 超出屏幕宽度的处理逻辑
             if (x >= WIDTH) {
-                x -= WIDTH;             // 计算出游标换行后的横坐标
+                x -= WIDTH;             // 对齐横坐标
                 cursor -= ROW_SIZE;
-                com_lf();               // 这里会复原 cursor
+                com_lf();               // 处理纵坐标, 这里会复原 cursor
             }
             
             // 在光标位置写入字符
@@ -291,6 +290,7 @@ void tty_write_char(char c) {
             x += 1;
             break;
     }
+    set_cursor();   // 设置cursor寄存器
 }
  
 #define BUFFER_SIZE 1024
