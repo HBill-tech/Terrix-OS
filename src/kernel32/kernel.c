@@ -27,6 +27,8 @@ void hlos_init(memory_info_t* mem_info, uint32_t gdt_info)
     tty_logf("KERNEL VERSION: %s, OS VERSION: %s", KERNEL_VERSION, OP_SYS_VERSION);
 
     time_init(OS_TZ);
+
+    tty_logf("");
     
     while (TRUE);
 }
