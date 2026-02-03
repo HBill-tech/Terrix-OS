@@ -44,6 +44,37 @@ static int passed_day_of_month_common_year[13] = {
     31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30,
 };
 
+static int days_in_month_common_year[13] = {
+    0,      // 没有 0 月，占位
+    31,                                
+    28,                                 
+    31,                            
+    30,                       
+    31,
+    30,
+    31,
+    31,
+    30,
+    31,
+    30,
+    31,
+};
+
+static int days_in_month_leap_year[13] = {
+    0,      // 没有 0 月，占位
+    31,                                
+    29,                                 
+    31,                            
+    30,                       
+    31,
+    30,
+    31,
+    31,
+    30,
+    31,
+    30,
+    31,
+};
 
 time_t time_stamp;      // 时间戳
 
@@ -76,13 +107,44 @@ void time_read(tm *time, uint8_t timezone) {
     // 将时间数据从 bcd 格式转化为二进制格式，方便后续数据处理与打印
     time->tm_sec = bcd_to_bin(time->tm_sec);
     time->tm_min = bcd_to_bin(time->tm_min);
-    time->tm_hour = (bcd_to_bin(time->tm_hour) + timezone) % 24;
+    time->tm_hour = (bcd_to_bin(time->tm_hour) + timezone);
     time->tm_wday = bcd_to_bin(time->tm_wday);
     time->tm_mday = bcd_to_bin(time->tm_mday);
     time->tm_mon = bcd_to_bin(time->tm_mon);
     time->tm_year = bcd_to_bin(time->tm_year);
     time->tm_isdst = -1;
     time->century = bcd_to_bin(time->century);
+
+    // 处理时区导致的日期变更问题
+    if (time->tm_hour >= 24) {
+        time->tm_hour %= 24;
+        time->tm_mday += 1;
+        time->tm_wday += 1;
+    }
+    if (time->tm_wday > 7) {
+        time->tm_wday %= 7;
+    }
+
+    // UTC 时间下该年各个月的最大天数
+    // 要考虑 UTC 年份是否是闰年，从而决定二月的天数
+    int max_day = (time->tm_year + 2) % 4 == 0 ? days_in_month_leap_year[time->tm_mon] : days_in_month_common_year[time->tm_mon];
+    if (time->tm_mday > max_day)
+    {
+        time->tm_mon += 1;
+        time->tm_mday -= max_day;
+    }
+
+    if (time->tm_mon > 12)
+    {
+        time->tm_year += 1;
+        time->tm_mon -= 12;
+    }
+
+    if (time->tm_year > 99)
+    {
+        time->tm_year -= 100;
+        time->century += 1;
+    }
 }
 
 /**
