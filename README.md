@@ -1,6 +1,6 @@
 ## 项目简介
 * 复现`bilibili`教程[点击此处跳转](https://www.bilibili.com/video/BV1Xdpze7E7b?spm_id_from=333.788.videopod.sections&vd_source=0297a102b9c9dd5de04074dc53d40c26).
-* 在windows环境下进行开发，对不熟悉linux的同志比较友好.
+* 在windows与Linux环境下均可开发，对不熟悉Linux的同志比较友好.
 
 * 不断更新中......
 
