@@ -18,7 +18,7 @@
 
 #define IRQ_PIC0_START      0x20        // PIC0 中断向量号偏移（将 IRQ0 - 7 映射到 0x20 - 0x27）
 #define IRQ_PIC1_START      0x28        // PIC1 中断向量号偏移 (将 IRQ8 ~ 15 映射到 0x28 ~ 0x2F)
-#define IRQ_PIC_END             0x2F        // PIC 对应的最后一个系统中断向量号
+#define IRQ_PIC_END         0x2F        // PIC 对应的最后一个系统中断向量号
 
 void pic_init();
 
