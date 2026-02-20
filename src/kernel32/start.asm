@@ -12,8 +12,8 @@ _start:
 
     push ebp
     mov ebp, esp
-    mov eax, [esp + 4]      ; 第一个参数
-    mov ebx, [esp + 8]      ; 第二个参数
+    mov eax, [esp + 8]      ; 第一个参数
+    mov ebx, [esp + 12]      ; 第二个参数
     push ebx
     push eax
     call hlos_init
