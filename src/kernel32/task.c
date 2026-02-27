@@ -2,6 +2,12 @@
 #include <task.h>
 #include <cstd/string.h>
 
+/**
+ * 初始化一个 tss 段
+ * @param task  tss_task_t 段结构体的首地址
+ * @param entry 该任务的入口
+ * @param esp   该任务的栈顶
+ */
 static void tss_init(tss_task_t *task, uint32_t entry, uint32_t esp)
 {
     uint32_t selector = alloc_gdt_table_entry(); // 从 GDT 中分配一个描述符
@@ -10,7 +16,8 @@ static void tss_init(tss_task_t *task, uint32_t entry, uint32_t esp)
         return; // 没有可用的描述符，初始化失败
     }
     
-    tss_t *tss = &task->tss;
+    // 指向 tss 段结构体的指针
+    tss_t *tss = &(task->tss);
 
     // 设置 GDT 描述符，属性为 0x89（存在、特权级 0、类型为 9 的 TSS 描述符）
     set_gdt_table_entry(selector, (uint32_t)tss, sizeof(tss_t) - 1, 
@@ -19,15 +26,15 @@ static void tss_init(tss_task_t *task, uint32_t entry, uint32_t esp)
     // 把 TSS 结构体清零，之后设置 TSS 的相关字段
     kernel_memset(tss, 0, sizeof(tss_t));
     // 设置任务的入口地址，eip表示该任务的下一条指令地址
-    task->tss.eip = entry;
+    tss->eip = entry;
     // 设置任务的栈顶地址，esp表示该任务的栈顶地址，esp0是内核栈顶地址
-    task->tss.esp = task->tss.esp0 = esp;
+    tss->esp = tss->esp0 = esp;
     // 把 es, ds, fs, gs, ss 和 ss0 都设置为内核数据段选择子
-    task->tss.es = task->tss.ds = task->tss.fs = task->tss.gs = task->tss.ss = task->tss.ss0 = KERNEL_DATA_SEG;
+    tss->es = tss->ds = tss->fs = tss->gs = tss->ss = tss->ss0 = KERNEL_DATA_SEG;
     // 把 cs 设置为内核代码段选择子
-    task->tss.cs = KERNEL_CODE_SEG;
+    tss->cs = KERNEL_CODE_SEG;
     // 设置 EFLAGS 寄存器，启用中断(IF位)
-    task->tss.eflags = EFLAGS_DEFAULT | EFLAGS_IF;
+    tss->eflags = EFLAGS_DEFAULT | EFLAGS_IF;
 
     task->selector = selector;
 }
@@ -52,7 +59,7 @@ void tss_task_switch(tss_task_t *from, tss_task_t *to)
 {
     /**
      * 当CPU执行一条远跳转（JMP）或远调用（CALL）指令，
-     * 且目标选择子指向GDT中的一个可用TSS描述符（类型为0x9或0xB）时，
+     * 且目标选择子指向 GDT 中的一个可用 TSS 描述符（类型为0x9或0xB）时，
      * 硬件会自动完成以下步骤：
      *      1. 保存当前任务状态：CPU将当前所有通用寄存器、段寄存器、
      *          EFLAGS、EIP等现场信息自动保存到当前TR寄存器所指向的TSS中.

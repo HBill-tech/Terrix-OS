@@ -23,8 +23,8 @@ typedef struct tss_t{
  * tss_task_t 结构体封装了一个 TSS 任务
  */
 typedef struct tss_task_t {
-    tss_t tss;
-    uint16_t selector;  // 该任务在 GDT 中的选择子
+    tss_t tss;          // 该任务 tss 段，其首地址将在后续作为该 tss 段在 GDT 中的 base
+    uint16_t selector;  // 该任务 tss 段对应于 GDT 中的选择子
 } tss_task_t;
 
 void tss_task_init(tss_task_t* task, uint32_t entry, uint32_t esp);
