@@ -3,7 +3,7 @@
 #include <cstd/string.h>
 
 /**
- * 初始化一个 tss 段
+ * tss 初始化
  * @param task  tss_task_t 段结构体的首地址
  * @param entry 该任务的入口
  * @param esp   该任务的栈顶
@@ -20,6 +20,7 @@ static void tss_init(tss_task_t *task, uint32_t entry, uint32_t esp)
     tss_t *tss = &(task->tss);
 
     // 设置 GDT 描述符，属性为 0x89（存在、特权级 0、类型为 9 的 TSS 描述符）
+    // 将 GDT 中新增的段与当前任务的 tss 结构体绑定，构成一个 TSS 段
     set_gdt_table_entry(selector, (uint32_t)tss, sizeof(tss_t) - 1, 
         SEG_ATTR_P | SEG_ATTR_DPL0 | SEG_TYPE_TSS); 
 
@@ -36,6 +37,7 @@ static void tss_init(tss_task_t *task, uint32_t entry, uint32_t esp)
     // 设置 EFLAGS 寄存器，启用中断(IF位)
     tss->eflags = EFLAGS_DEFAULT | EFLAGS_IF;
 
+    // 初始化任务 TSS 段对应的 GDT 选择子
     task->selector = selector;
 }
 
