@@ -4,7 +4,7 @@
 #include <kernel.h>
 
 /**
- * tss_t 结构体定义了任务状态段（TSS）的格式，用于保存任务的上下文信息。
+ * tss_t 结构体定义了任务状态段（TSS）的格式，用于保存任务的寄存器上下文信息。
  */
 typedef struct tss_t{
     uint32_t pre_link;
@@ -24,7 +24,7 @@ typedef struct tss_t{
  */
 typedef struct tss_task_t {
     tss_t tss;
-    uint32_t selector;  // 该任务在 GDT 中的选择子
+    uint16_t selector;  // 该任务在 GDT 中的选择子
 } tss_task_t;
 
 void tss_task_init(tss_task_t* task, uint32_t entry, uint32_t esp);

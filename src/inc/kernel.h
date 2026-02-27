@@ -109,6 +109,9 @@ typedef struct gdt_table_t
     uint8_t base_h;
 } _packed gdt_table_t;
 
+#define EFLAGS_DEFAULT (1 << 1) // CPU 启动时默认的 EFLAGS 寄存器值
+#define EFLAGS_IF      (1 << 9) // EFLAGS 寄存器中的 IF 位，用于控制中断的启用和禁用
+
 
 /******************************** EXTERN FUNCTIONS ****************************/
 
@@ -179,7 +182,7 @@ static inline void sti() {
 /**
  * 将 GDT 的基地址和界限加载到 GDTR 中
  * @param start GDT的首地址
- * @param size  GDT的界限（最后一个有效字节的偏移量）
+ * @param size  GDT表大小(元素个数)
  */
 static inline void lgdt(uint32_t start, uint16_t size) {
     struct 
@@ -276,10 +279,10 @@ static inline void far_jump(uint32_t selector, uint32_t offset) {
 /******************************* GDT Functions in PM (32 bits) ****************************/
 void gdt32_init(gdt_table_t *gdt_ptr);
 
-// uint32_t alloc_gdt_table_entry(); 
+uint32_t alloc_gdt_table_entry(); 
 
-// void free_gdt_table_entry(uint32_t selector);
+void free_gdt_table_entry(uint32_t selector);
 
-// void set_gdt_table_entry(uint32_t selector, uint32_t base, uint32_t limit, uint16_t attr);
+void set_gdt_table_entry(uint32_t selector, uint32_t base, uint32_t limit, uint16_t attr);
 
 #endif
