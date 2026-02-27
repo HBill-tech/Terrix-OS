@@ -121,7 +121,6 @@ void kernel32_init()
     {
         while (TRUE);
     }
-
     // 跳转到 x86 内核
-    ((void (*)(memory_info_t*, uint32_t))addr)(&memory_info, (uint32_t)&gdt_table);
+    ((void (*)(memory_info_t*, uint32_t))addr)(&memory_info, (uint32_t)gdt_table);
 }

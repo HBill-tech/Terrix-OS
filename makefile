@@ -62,7 +62,9 @@ $(BUILD)/kernel32.elf: $(BUILD)/kernel32/start.o \
 	$(BUILD)/kernel32/timer.o		\
 	$(BUILD)/kernel32/logf.o		\
 	$(BUILD)/kernel32/rtc.o			\
-	$(BUILD)/kernel32/time.o
+	$(BUILD)/kernel32/time.o		\
+	$(BUILD)/kernel32/task.o		\
+	$(BUILD)/kernel32/gdt32.o
 	$(shell mkdir -p $(dir $@))
 	x86_64-elf-ld -m elf_i386 -T $(SRC)/kernel32.lds $^ -o $@
 

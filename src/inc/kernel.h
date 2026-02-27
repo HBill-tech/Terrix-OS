@@ -94,7 +94,7 @@ typedef struct  memory_info_t
 
 
 /**
- * gdt 格式
+ * gdt 每一个表项的格式
  *     | 31                    16bits                   16 | 15             16bits           0 |
  *     |                      Base 0:15                    |             Limit 0:15            |
  *     | 63     8bits   56 | 55 4bits 52 | 51    4bis   48 | 47    8bits    40 | 39  8bits  32 |
@@ -244,6 +244,18 @@ static inline void write_cr0(uint32_t v) {
     );
 }
 
+/**
+ * 加载 GDT 中 TSS 段的选择子到 TR 寄存器
+ * @param selector TSS 描述符在 GDT 中的选择子
+ */
+static inline void write_tr(uint16_t selector) {
+    __asm__ volatile(
+        "ltr %%ax"
+        :
+        : "a"(selector)
+    );
+}
+
 // 远跳转
 static inline void far_jump(uint32_t selector, uint32_t offset) {
     // 跳转地址的描述符
@@ -260,5 +272,14 @@ static inline void far_jump(uint32_t selector, uint32_t offset) {
         : [descriptor]"r"(descriptor)
     );
 }
+
+/******************************* GDT Functions in PM (32 bits) ****************************/
+void gdt32_init(gdt_table_t *gdt_ptr);
+
+// uint32_t alloc_gdt_table_entry(); 
+
+// void free_gdt_table_entry(uint32_t selector);
+
+// void set_gdt_table_entry(uint32_t selector, uint32_t base, uint32_t limit, uint16_t attr);
 
 #endif

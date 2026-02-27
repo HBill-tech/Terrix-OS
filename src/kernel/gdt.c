@@ -8,7 +8,7 @@ gdt_table_t gdt_table[GDT_SIZE] = {
 
 // 设置 gdt 的表项
 // 这里的 base 指在保护模式下段可以访问的起始地址, 因此该段实际能够访问的地址范围是 (base, base + limit)
-void set_gdt_table_entry(int selector, uint32_t base, uint32_t limit, uint16_t attr) {
+void set_gdt_table_entry(uint32_t selector, uint32_t base, uint32_t limit, uint16_t attr) {
 
     // 如果段界限超过1MB（0xFFFFF），需要设置粒度位
     if (limit > 0xFFFFF)
