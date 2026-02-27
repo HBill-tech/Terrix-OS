@@ -40,7 +40,7 @@ static void tss_init(tss_task_t *task, uint32_t entry, uint32_t esp)
 }
 
 /**
- * 初始化一个 TSS 任务
+ * 初始化一个任务
  * @param task  任务结构体指针
  * @param entry 任务入口地址
  * @param esp   任务栈顶地址

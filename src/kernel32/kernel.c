@@ -6,7 +6,7 @@
 #include <cstd/time.h>
 #include <task.h>
 
-// 不同任务的 tss 段
+// 定义任务
 static tss_task_t main_task, child_task;
 // 如果是 1024 会导致子任务栈炸了，无法正常切换任务
 static uint8_t child_task_stack[4096];
@@ -59,7 +59,7 @@ void hlos_init(memory_info_t* mem_info, uint32_t gdt_info)
 
     // tr 用来存储当前执行任务的 tss 段选择子
     // 初始化 tr 为主任务 tss 段的选择子, 
-    // 后续任务切换时候直接保存主任务上下文到 tr 在 GDT 中指向的 tss 段
+    // 后续任务切换时候直接保存主任务上下文到 tr 指向的 tss 段
     write_tr(main_task.selector);   
     main_task_entry();              // 进入主任务
 }

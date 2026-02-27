@@ -20,7 +20,7 @@ typedef struct tss_t{
 } tss_t;
 
 /**
- * tss_task_t 结构体封装了一个 TSS 任务
+ * tss_task_t 结构体封装了一个任务
  */
 typedef struct tss_task_t {
     tss_t tss;          // 该任务 tss 段，其首地址将在后续作为该 tss 段在 GDT 中的 base
