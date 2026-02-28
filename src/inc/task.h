@@ -20,11 +20,11 @@ typedef struct tss_t{
 } tss_t;
 
 /**
- * tss_task_t 结构体封装了一个任务
+ * tss_task_t 结构体封装了一个任务的，方便对任务进行管理.
  */
 typedef struct tss_task_t {
     tss_t tss;          // 该任务的 tss 结构体
-    uint16_t selector;  // 该任务 tss 段对应的 GDT 选择子
+    uint16_t selector;  // 该任务 tss 段在 GDT 中的选择子
 } tss_task_t;
 
 void tss_task_init(tss_task_t* task, uint32_t entry, uint32_t esp);
