@@ -89,8 +89,8 @@ soft_switch:
     push edi
     mov [eax], esp      ; 把当前的栈顶写入 from->stack
 
-    mov esp, edx        ; 切换到另一个任务的栈空间，由于esp在这里指向了 to->stack，
-                        ; 且 to->stack->eip 就是任务函数入口, 所以新任务的栈必然被绑定在 to->stack 上
+    mov esp, edx        ; 切换到另一个任务的栈空间. esp在这里指向了 to->stack，
+                        ; ret之后进入新任务，而 esp 在此期间没有变化，因此 to->stack 就是新任务的占空间.
     pop edi
     pop esi
     pop ebx
