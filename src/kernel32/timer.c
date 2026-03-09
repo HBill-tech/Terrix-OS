@@ -33,7 +33,7 @@ void handler_timer(interrupt_frame_t frame) {
 
     ticks++;                // 时钟打点次数加一
     send_eoi(IRQ0_TIMER);   // 表示中断处理完毕
-    tty_logf("beeping: %d\n", beeping);
+    // tty_logf("beeping: %d\n", beeping);
 }
 
 void start_beep() {

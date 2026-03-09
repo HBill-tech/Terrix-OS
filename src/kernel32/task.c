@@ -4,6 +4,9 @@
 
 /**
  * tss 初始化
+ *      1.分配一个 selector 给 tss 段.
+ *      2.把 tss 段地址和 selector 关联.
+ *      3.初始化 tss 段内容.
  * @param task  tss_task_t 段结构体的首地址
  * @param entry 该任务的入口
  * @param esp   该任务的栈顶
@@ -71,4 +74,58 @@ void tss_task_switch(tss_task_t *from, tss_task_t *to)
      * 整个过程无需软件干预，CPU硬件自动完成。
      */
     far_jump(to->selector, 0); // 远跳转到目标任务的入口地址，触发任务切换
+}
+
+
+/**
+ * 初始化 soft task.
+ * i386压栈顺序
+ *      param2
+ *      param1
+ *      eip
+ *      ebp: 调用者的 ebp，和被调用函数的任务无关，但被调用者有义务在结束任务时恢复 ebp 值.
+ *              被调用者会在 push ebp 后建立自己的 ebp.
+ *      ebx
+ *      esi
+ *      edi
+ * @param task  任务结构体指针
+ * @param entry 任务入口函数
+ * @param esp   任务栈顶
+ */
+void soft_task_init(soft_task_t* task, uint32_t entry, uint32_t esp) {
+    uint32_t *pesp = (uint32_t*)esp;
+    if (pesp)
+    {
+        *(--pesp) = entry;      // eip
+        /**
+         * 以下是“被调用者保存”寄存器，被调用者有义务维护这些寄存器的值最终不变.
+         * 但是这些值的初始值是什么不重要，那是调用者的事情.
+         * 
+         * 如果一个函数是通过调度器切换进入的，那么它不扮演“被调用者”的角色.
+         * 因此初始化一些“不被调用”的任务时，这些值赋值为确定值就好.
+         * 
+         * 此处设立了寄存器值只约束通过调度器进入该任务的情况. 不约束通过函数调用该任务的情况.
+         */
+        *(--pesp) = 0;          // ebp
+        *(--pesp) = 1;          // ebx
+        *(--pesp) = 2;          // esi
+        *(--pesp) = 3;          // edi
+        task->stack = pesp;     // 把当前的栈指针当作存储任务上下文的栈顶
+    }
+}
+
+/**
+ * 任务切换
+ * @param from  from->stack的指针，指向栈地址的指针
+ * @param to    to->stack，栈地址
+ */
+extern void soft_switch(uint32_t **from, uint32_t *to);
+
+/**
+ * 软切换的函数
+ * @param from  当前任务
+ * @param to    目标任务
+ */
+void soft_task_switch(soft_task_t* from, soft_task_t* to) {
+    soft_switch(&from->stack, to->stack);
 }

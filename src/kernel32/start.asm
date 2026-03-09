@@ -77,3 +77,22 @@ INTERRUPT_HANDLER control,          21,     1
 ; PIC 外中断
 INTERRUPT_HANDLER timer,            0x20,   0
 INTERRUPT_HANDLER rtc,              0x28,   0
+
+section .text
+global soft_switch
+soft_switch:
+    mov eax, [esp + 4]  ; eax 是指向 from->stack 的指针
+    mov edx, [esp + 8]  ; ebx 是 to->stack
+    push ebp
+    push ebx
+    push esi
+    push edi
+    mov [eax], esp      ; 把当前的栈顶写入 from->stack
+
+    mov esp, edx        ; 切换到另一个任务的栈空间，由于esp在这里指向了 to->stack，
+                        ; 且 to->stack->eip 就是任务函数入口, 所以新任务的栈必然被绑定在 to->stack 上
+    pop edi
+    pop esi
+    pop ebx
+    pop ebp
+    ret
